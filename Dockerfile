@@ -1,12 +1,11 @@
-# Use an official Node runtime as the base image
-FROM node:24-slim AS base
-# Set the working directory in the container
-WORKDIR /usr/src/app
+# ============================================
+# Stage 1: Base with all system dependencies
+# ============================================
+FROM node:24-slim AS base-with-deps
 
-# Create dependency layer
-FROM base AS dependencies
 RUN apt-get update && apt-get install -y \
     nginx \
+    supervisor \
     git \
     curl \
     jq \
@@ -14,85 +13,66 @@ RUN apt-get update && apt-get install -y \
     apache2-utils \
     && rm -rf /var/lib/apt/lists/*
 
-# Update worker_connections in the existing nginx.conf
-RUN sed -i 's/worker_connections [0-9]*/worker_connections 8192/' /etc/nginx/nginx.conf
-
-FROM dependencies AS build
-ARG GIT_COMMIT=unknown
-ENV GIT_COMMIT="$GIT_COMMIT"
-# Disable Husky hooks
-ENV HUSKY=0
-# Copy package.json and package-lock.json
-COPY package*.json ./
-# Install dependencies
-RUN npm ci
-# Copy the rest of the application code
-COPY . .
-# Build the client-side application
-RUN npm run build-prod
-# So we can see which commit was used to build the container
-# https://openfront.io/commit.txt
-RUN echo "$GIT_COMMIT" > static/commit.txt
-
-# Remove maps data from final image
-FROM base AS prod-files
-COPY . .
-RUN rm -rf resources/maps
-
-FROM dependencies AS npm-dependencies
-# Disable Husky hooks
-ENV HUSKY=0
-ENV NPM_CONFIG_IGNORE_SCRIPTS=1
-# Copy package.json and package-lock.json
-COPY package*.json ./
-# Install dependencies
-RUN npm ci --omit=dev
-
-# Final image
-FROM base
-ARG GIT_COMMIT=unknown
-ENV GIT_COMMIT="$GIT_COMMIT"
-RUN apt-get update && apt-get install -y \
-    nginx \
-    supervisor \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy installed packages from dependencies stage
 RUN curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb > cloudflared.deb \
     && dpkg -i cloudflared.deb \
     && rm cloudflared.deb
 
-# Copy Nginx configuration and ensure it's used instead of the default
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-RUN rm -f /etc/nginx/sites-enabled/default
-COPY --from=dependencies /etc/nginx/nginx.conf /etc/nginx/nginx.conf
+RUN sed -i 's/worker_connections [0-9]*/worker_connections 8192/' /etc/nginx/nginx.conf \
+    && rm -f /etc/nginx/sites-enabled/default
 
-# Copy npm dependencies
-COPY --from=npm-dependencies /usr/src/app/node_modules node_modules
-COPY package.json .
-
-# Copy the rest of the application code
-COPY --from=prod-files /usr/src/app/ /usr/src/app/
-
-# Copy frontend
-COPY --from=build /usr/src/app/static static
-
-# Setup supervisor configuration
-RUN mkdir -p /var/log/supervisor
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
-# Copy and make executable the startup script
-COPY startup.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/startup.sh
-
-RUN mkdir -p /etc/cloudflared && \
+RUN mkdir -p /var/log/supervisor /etc/cloudflared && \
     chown -R node:node /etc/cloudflared && \
     chmod -R 755 /etc/cloudflared
 
-# Set Cloudflared config directory to a volume mount location
+WORKDIR /usr/src/app
+
+# ============================================
+# Stage 2: Build stage (build + prod deps)
+# ============================================
+FROM base-with-deps AS builder
+ARG GIT_COMMIT=unknown
+ENV GIT_COMMIT="$GIT_COMMIT"
+ENV HUSKY=0
+
+# Install all dependencies for building
+COPY package*.json ./
+RUN npm ci
+
+# Copy source and build
+COPY . .
+RUN npm run build-prod && \
+    echo "$GIT_COMMIT" > static/commit.txt && \
+    rm -rf resources/maps
+
+# Install production dependencies in a separate location
+RUN mkdir /prod-deps && \
+    cp package*.json /prod-deps/ && \
+    cd /prod-deps && \
+    NPM_CONFIG_IGNORE_SCRIPTS=1 npm ci --omit=dev
+
+# ============================================
+# Stage 3: Final production image
+# ============================================
+FROM base-with-deps
+ARG GIT_COMMIT=unknown
+ENV GIT_COMMIT="$GIT_COMMIT"
+ENV HUSKY=0
+ENV NPM_CONFIG_IGNORE_SCRIPTS=1
+
+# Copy configs
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY startup.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/startup.sh
+
+# Copy production dependencies
+COPY --from=builder /prod-deps/node_modules ./node_modules
+COPY package.json ./
+
+# Copy application source (excluding maps which were removed in builder)
+COPY --from=builder /usr/src/app/ ./
+
 ENV CF_CONFIG_PATH=/etc/cloudflared/config.yml
 ENV CF_CREDS_PATH=/etc/cloudflared/creds.json
 
-# Use the startup script as the entrypoint
 ENTRYPOINT ["/usr/local/bin/startup.sh"]
