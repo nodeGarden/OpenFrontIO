@@ -2,13 +2,12 @@ import { LitElement, html } from "lit";
 import { customElement, query, state } from "lit/decorators.js";
 import { translateText } from "../client/Utils";
 import { ThemeMode, UserSettings } from "../core/game/UserSettings";
-import "./components/baseComponents/setting/SettingColorPalette";
 import "./components/baseComponents/setting/SettingGroup";
 import "./components/baseComponents/setting/SettingKeybind";
 import { SettingKeybind } from "./components/baseComponents/setting/SettingKeybind";
 import "./components/baseComponents/setting/SettingNumber";
+import "./components/baseComponents/setting/SettingPlaceholder";
 import "./components/baseComponents/setting/SettingSlider";
-import "./components/baseComponents/setting/SettingTerritorySkins";
 import "./components/baseComponents/setting/SettingThemeMode";
 import "./components/baseComponents/setting/SettingToggle";
 
@@ -297,7 +296,10 @@ export class UserSettingModal extends LitElement {
         label="${translateText("user_setting.group_skins")}"
         groupId="skins"
       >
-        <setting-territory-skins disabled></setting-territory-skins>
+        <setting-placeholder
+          image="/images/placeholders/placeholder-display-theme-manager.jpg"
+          alt="${translateText("user_setting.skins_preview_alt")}"
+        ></setting-placeholder>
       </setting-group>
 
       <!-- Cosmetics - Colors -->
@@ -305,7 +307,10 @@ export class UserSettingModal extends LitElement {
         label="${translateText("user_setting.group_colors")}"
         groupId="colors"
       >
-        <setting-color-palette disabled></setting-color-palette>
+        <setting-placeholder
+          image="/images/placeholders/placeholder-display-color-manager.jpg"
+          alt="${translateText("user_setting.colors_preview_alt")}"
+        ></setting-placeholder>
       </setting-group>
     `;
   }
@@ -403,9 +408,11 @@ export class UserSettingModal extends LitElement {
           description="${translateText("user_setting.attack_ratio_desc")}"
           min="1"
           max="100"
-          .value=${Number(
-            localStorage.getItem("settings.attackRatio") ?? "0.2",
-          ) * 100}
+          .value=${(() => {
+            const stored = localStorage.getItem("settings.attackRatio");
+            const parsed = stored !== null ? Number(stored) : 0.2;
+            return (Number.isNaN(parsed) ? 0.2 : parsed) * 100;
+          })()}
           @change=${this.sliderAttackRatio}
         ></setting-slider>
       </setting-group>
