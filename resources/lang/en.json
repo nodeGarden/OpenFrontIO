@@ -115,7 +115,7 @@
     "build_silo": "Missile Silo",
     "build_silo_desc": "Allows launching missiles.",
     "build_sam": "SAM Launcher",
-    "build_sam_desc": "Can intercept enemy missiles in its 100 pixel range. With a 100% hit chance for Atom Bomb, 80% for Hydrogen Bomb and 50% for individual MIRV Warheads. The SAM has a 7.5 second cooldown.",
+    "build_sam_desc": "Can intercept enemy missiles in its 100 pixel range. The SAM has a 7.5 second cooldown.",
     "build_atom": "Atom Bomb",
     "build_atom_desc": "Small explosive bomb that destroys territory, buildings, ships and boats. Spawns from the nearest Missile Silo and lands in the area you first clicked to build it.",
     "build_hydrogen": "Hydrogen Bomb",
@@ -130,7 +130,8 @@
     "icon_embargo": "Dollar stop sign - Embargo. This player has stopped trading with you automatically or manually.",
     "icon_request": "Envelope - Alliance request. This player has sent you an alliance request.",
     "info_enemy_panel": "Enemy info panel",
-    "exit_confirmation": "Are you sure you want to exit the game?"
+    "exit_confirmation": "Are you sure you want to exit the game?",
+    "bomb_direction": "Atom / Hydrogen bomb arc direction"
   },
   "single_modal": {
     "title": "Single Player",
@@ -243,7 +244,8 @@
     "gulfofstlawrence": "Gulf of St. Lawrence",
     "lisbon": "Lisbon",
     "svalmel": "Svalmel",
-    "manicouagan": "Manicouagan"
+    "manicouagan": "Manicouagan",
+    "lemnos": "Lemnos"
   },
   "map_categories": {
     "continental": "Continental",
@@ -268,10 +270,13 @@
   "public_lobby": {
     "join": "Join next Game",
     "waiting": "players waiting",
+    "waiting_for_players": "Waiting for players",
+    "starting_game": "Starting game…",
     "teams_Duos": "of 2 (Duos)",
     "teams_Trios": "of 3 (Trios)",
     "teams_Quads": "of 4 (Quads)",
-    "teams_hvn": "Humans Vs Nations",
+    "teams_hvn": "Humans vs Nations",
+    "teams_hvn_detailed": "{num} Humans vs {num} Nations",
     "teams": "{num} teams",
     "players_per_team": "of {num}"
   },
@@ -364,10 +369,28 @@
   },
   "user_setting": {
     "title": "User Settings",
-    "tab_basic": "Basic Settings",
+    "tab_display": "Display",
+    "tab_basic": "Settings",
     "tab_keybinds": "Keybinds",
+    "group_theme": "Theme",
+    "group_skins": "Territory Skins",
+    "group_colors": "Territory Colors",
+    "group_interface": "Interface",
+    "group_graphics": "Graphics",
+    "group_controls": "Controls",
+    "group_privacy": "Privacy",
+    "group_easter": "Secret Settings",
+    "theme_mode_label": "Appearance",
+    "theme_mode_desc": "Choose how the site looks. System follows your device settings.",
+    "skins_title": "Territory Skins",
+    "skins_desc": "Customize your territory with unique pattern designs",
+    "skins_preview_alt": "Territory Skins preview - coming soon",
+    "colors_title": "Territory Colors",
+    "colors_desc": "Choose custom colors for your territory",
+    "colors_preview_alt": "Color Palette preview - coming soon",
+    "cosmetics_note": "Available with Cosmetics module - coming soon!",
     "dark_mode_label": "Dark Mode",
-    "dark_mode_desc": "Toggle the site’s appearance between light and dark themes",
+    "dark_mode_desc": "Toggle the site's appearance between light and dark themes",
     "emojis_label": "Emojis",
     "emojis_desc": "Toggle whether emojis are shown in game",
     "alert_frame_label": "Alert Frame",
@@ -385,9 +408,9 @@
     "left_click_label": "Left Click to Open Menu",
     "left_click_desc": "When ON, left-click opens menu and sword button attacks. When OFF, left-click attacks directly.",
     "left_click_menu": "Left Click Menu",
-    "attack_ratio_label": "⚔️ Attack Ratio",
+    "attack_ratio_label": "Attack Ratio",
     "attack_ratio_desc": "What percentage of your troops to send in an attack (1–100%)",
-    "territory_patterns_label": "🏳️ Territory Skins",
+    "territory_patterns_label": "Territory Skins",
     "territory_patterns_desc": "Choose whether to display territory skin designs in game",
     "performance_overlay_label": "Performance Overlay",
     "performance_overlay_desc": "Toggle the performance overlay. When enabled, the performance overlay will be displayed. Press shift-D during game to toggle.",
@@ -574,7 +597,7 @@
     "ofm_winter_description": "Join the competitive tournament and compete against the best players",
     "join_tournament": "Join Tournament",
     "join_discord": "Join Our Discord Community!",
-    "discord_description": "Connect with other players, get updates, and share strategies",
+    "discord_description": "Connect with players, discover new features, and win prizes!",
     "join_server": "Join Server",
     "youtube_tutorial": "Need some help?"
   },
@@ -740,7 +763,9 @@
   },
   "heads_up_message": {
     "choose_spawn": "Choose a starting location",
-    "random_spawn": "Random spawn is enabled. Selecting starting location for you..."
+    "random_spawn": "Random spawn is enabled. Selecting starting location for you...",
+    "singleplayer_game_paused": "Game paused",
+    "multiplayer_game_paused": "Game paused by Lobby Creator"
   },
   "territory_patterns": {
     "title": "Skins",

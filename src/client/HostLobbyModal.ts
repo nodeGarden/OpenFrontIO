@@ -1,6 +1,5 @@
 import { LitElement, html } from "lit";
 import { customElement, query, state } from "lit/decorators.js";
-import randomMap from "../../resources/images/RandomMap.webp";
 import { translateText } from "../client/Utils";
 import { getServerConfigFromClient } from "../core/configuration/ConfigLoader";
 import {
@@ -28,14 +27,17 @@ import "./components/Difficulties";
 import "./components/FluentSlider";
 import "./components/LobbyTeamView";
 import "./components/Maps";
+import { crazyGamesSDK } from "./CrazyGamesSDK";
 import { JoinLobbyEvent } from "./Main";
 import { terrainMapFileLoader } from "./TerrainMapFileLoader";
 import { renderUnitTypeOptions } from "./utilities/RenderUnitTypeOptions";
+import randomMap from "/images/RandomMap.webp?url";
 @customElement("host-lobby-modal")
 export class HostLobbyModal extends LitElement {
   @query("o-modal") private modalEl!: HTMLElement & {
     open: () => void;
     close: () => void;
+    onClose?: () => void;
   };
   @state() private selectedMap: GameMapType = GameMapType.World;
   @state() private selectedDifficulty: Difficulty = Difficulty.Medium;
@@ -549,9 +551,9 @@ export class HostLobbyModal extends LitElement {
                 : translateText("host_modal.players")
             }
             <span style="margin: 0 8px;">•</span>
-            ${this.disableNations ? 0 : this.nationCount}
+            ${this.getEffectiveNationCount()}
             ${
-              this.nationCount === 1
+              this.getEffectiveNationCount() === 1
                 ? translateText("host_modal.nation_player")
                 : translateText("host_modal.nation_players")
             }
@@ -562,7 +564,7 @@ export class HostLobbyModal extends LitElement {
             .clients=${this.clients}
             .lobbyCreatorClientID=${this.lobbyCreatorClientID}
             .teamCount=${this.teamCount}
-            .nationCount=${this.disableNations ? 0 : this.nationCount}
+            .nationCount=${this.getEffectiveNationCount()}
             .onKickPlayer=${(clientID: string) => this.kickPlayer(clientID)}
           ></lobby-team-view>
         </div>
@@ -600,7 +602,7 @@ export class HostLobbyModal extends LitElement {
     createLobby(this.lobbyCreatorClientID)
       .then((lobby) => {
         this.lobbyId = lobby.gameID;
-        // join lobby
+        crazyGamesSDK.showInviteButton(this.lobbyId);
       })
       .then(() => {
         this.dispatchEvent(
@@ -615,11 +617,16 @@ export class HostLobbyModal extends LitElement {
         );
       });
     this.modalEl?.open();
+    this.modalEl.onClose = () => {
+      this.close();
+    };
     this.playersInterval = setInterval(() => this.pollPlayers(), 1000);
     this.loadNationCount();
   }
 
   public close() {
+    console.log("Closing host lobby modal");
+    crazyGamesSDK.hideInviteButton();
     this.modalEl?.close();
     this.copySuccess = false;
     if (this.playersInterval) {
@@ -822,7 +829,6 @@ export class HostLobbyModal extends LitElement {
 
   private async copyToClipboard() {
     try {
-      //TODO: Convert id to url and copy
       await navigator.clipboard.writeText(
         `${location.origin}/#join=${this.lobbyId}`,
       );
@@ -845,8 +851,6 @@ export class HostLobbyModal extends LitElement {
     })
       .then((response) => response.json())
       .then((data: GameInfo) => {
-        console.log(`got game info response: ${JSON.stringify(data)}`);
-
         this.clients = data.clients ?? [];
       });
   }
@@ -871,6 +875,21 @@ export class HostLobbyModal extends LitElement {
       console.warn("Failed to load nation count", error);
       this.nationCount = 0;
     }
+  }
+
+  /**
+   * Returns the effective nation count for display purposes.
+   * In HumansVsNations mode, this equals the number of human players.
+   * Otherwise, it uses the manifest nation count (or 0 if nations are disabled).
+   */
+  private getEffectiveNationCount(): number {
+    if (this.disableNations) {
+      return 0;
+    }
+    if (this.gameMode === GameMode.Team && this.teamCount === HumansVsNations) {
+      return this.clients.length;
+    }
+    return this.nationCount;
   }
 }
 
