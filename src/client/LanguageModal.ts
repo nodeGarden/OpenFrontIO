@@ -67,10 +67,10 @@ export class LanguageModal extends LitElement {
         class="fixed p-4 z-[9999] inset-0 bg-black/50 overflow-y-auto flex items-center justify-center"
       >
         <div
-          class="bg-gray-800/80 dark:bg-gray-900/90 backdrop-blur-md rounded-lg min-w-[340px] max-w-[480px] w-full"
+          class="bg-sky-50/95 dark:bg-gray-900/90 backdrop-blur-md rounded-lg min-w-[340px] max-w-[480px] w-full"
         >
           <header
-            class="relative rounded-t-md text-lg bg-black/60 dark:bg-black/80 text-center text-white px-6 py-4 pr-10"
+            class="relative rounded-t-md text-lg bg-sky-400/95 dark:bg-black/80 text-center text-white px-6 py-4 pr-10"
           >
             ${translateText("select_lang.title")}
             <div
@@ -82,7 +82,7 @@ export class LanguageModal extends LitElement {
           </header>
 
           <section
-            class="relative text-white dark:text-gray-100 p-6 max-h-[60dvh] overflow-y-auto"
+            class="relative text-gray-900 dark:text-gray-100 p-6 max-h-[60dvh] overflow-y-auto"
           >
             ${this.languageList.map((lang) => {
               const isActive = this.currentLang === lang.code;
@@ -96,10 +96,10 @@ export class LanguageModal extends LitElement {
                   " animate-pulse font-bold text-white border-2 border-dashed border-cyan-400 shadow-lg shadow-cyan-400/25 bg-gradient-to-r from-red-600 via-yellow-600 via-green-600 via-blue-600 to-purple-600";
               } else if (isActive) {
                 buttonClasses +=
-                  " bg-gray-400 dark:bg-gray-500 border-gray-300 dark:border-gray-400 text-black dark:text-white";
+                  " bg-sky-200 dark:bg-gray-500 border-sky-300 dark:border-gray-400 text-gray-900 dark:text-white";
               } else {
                 buttonClasses +=
-                  " bg-gray-600 dark:bg-gray-700 border-gray-500 dark:border-gray-600 text-white dark:text-gray-100 hover:bg-gray-500 dark:hover:bg-gray-600";
+                  " bg-sky-100 dark:bg-gray-700 border-sky-200 dark:border-gray-600 text-gray-800 dark:text-gray-100 hover:bg-sky-200 dark:hover:bg-gray-600";
               }
 
               return html`

@@ -248,7 +248,7 @@ export class HelpModal extends LitElement {
         </div>
         <div class="flex flex-col md:flex-row gap-4">
           <div class="flex flex-col items-center">
-            <div class="text-gray-300 font-bold">
+            <div class="font-bold" style="color: var(--modal-text-muted)">
               ${translateText("help_modal.ui_leaderboard")}
             </div>
             <img
@@ -268,7 +268,7 @@ export class HelpModal extends LitElement {
 
         <div class="flex flex-col md:flex-row gap-4">
           <div class="flex flex-col items-center w-full md:w-[80%]">
-            <div class="text-gray-300 font-bold">
+            <div class="font-bold" style="color: var(--modal-text-muted)">
               ${translateText("help_modal.ui_control")}
             </div>
             <img
@@ -294,7 +294,7 @@ export class HelpModal extends LitElement {
 
         <div class="flex flex-col md:flex-row gap-4">
           <div class="flex flex-col items-center">
-            <div class="text-gray-300 font-bold">
+            <div class="font-bold" style="color: var(--modal-text-muted)">
               ${translateText("help_modal.ui_events")}
             </div>
             <div class="flex flex-col gap-4">
@@ -334,7 +334,7 @@ export class HelpModal extends LitElement {
 
         <div class="flex flex-col md:flex-row gap-4">
           <div class="flex flex-col items-center">
-            <div class="text-gray-300 font-bold">
+            <div class="font-bold" style="color: var(--modal-text-muted)">
               ${translateText("help_modal.ui_options")}
             </div>
             <img
@@ -362,7 +362,7 @@ export class HelpModal extends LitElement {
 
         <div class="flex flex-col md:flex-row gap-4">
           <div class="flex flex-col items-center">
-            <div class="text-gray-300 font-bold">
+            <div class="font-bold" style="color: var(--modal-text-muted)">
               ${translateText("help_modal.ui_playeroverlay")}
             </div>
             <img
@@ -444,7 +444,7 @@ export class HelpModal extends LitElement {
 
           <div class="flex flex-col md:flex-row gap-4">
             <div class="flex flex-col items-center w-full md:w-[62%]">
-              <div class="text-gray-300 font-bold">
+              <div class="font-bold" style="color: var(--modal-text-muted)">
                 ${translateText("help_modal.info_enemy_panel")}
               </div>
               <img
@@ -488,7 +488,7 @@ export class HelpModal extends LitElement {
 
           <div class="flex flex-col md:flex-row gap-4">
             <div class="flex flex-col items-center w-full md:w-[62%]">
-              <div class="text-gray-300 font-bold">
+              <div class="font-bold" style="color: var(--modal-text-muted)">
                 ${translateText("help_modal.info_ally_panel")}
               </div>
               <img
@@ -602,7 +602,8 @@ export class HelpModal extends LitElement {
               class="flex flex-col items-center w-full md:w-1/3 mb-2 md:mb-0"
             >
               <div
-                class="text-gray-300 flex flex-col justify-start min-h-[3rem] w-full px-2 mb-1"
+                class="flex flex-col justify-start min-h-[3rem] w-full px-2 mb-1"
+                style="color: var(--modal-text-muted)"
               >
                 ${translateText("help_modal.icon_crown")}
               </div>
@@ -619,7 +620,8 @@ export class HelpModal extends LitElement {
               class="flex flex-col items-center w-full md:w-1/3 mb-2 md:mb-0"
             >
               <div
-                class="text-gray-300 flex flex-col justify-start min-h-[3rem] w-full px-2 mb-1"
+                class="flex flex-col justify-start min-h-[3rem] w-full px-2 mb-1"
+                style="color: var(--modal-text-muted)"
               >
                 ${translateText("help_modal.icon_traitor")}
               </div>
@@ -636,7 +638,8 @@ export class HelpModal extends LitElement {
               class="flex flex-col items-center w-full md:w-1/3 mb-2 md:mb-0"
             >
               <div
-                class="text-gray-300 flex flex-col justify-start min-h-[3rem] w-full px-2 mb-1"
+                class="flex flex-col justify-start min-h-[3rem] w-full px-2 mb-1"
+                style="color: var(--modal-text-muted)"
               >
                 ${translateText("help_modal.icon_ally")}
               </div>
@@ -655,7 +658,8 @@ export class HelpModal extends LitElement {
               class="flex flex-col items-center w-full md:w-1/3 mb-2 md:mb-0"
             >
               <div
-                class="text-gray-300 flex flex-col justify-start min-h-[3rem] w-full px-2 mb-1"
+                class="flex flex-col justify-start min-h-[3rem] w-full px-2 mb-1"
+                style="color: var(--modal-text-muted)"
               >
                 ${translateText("help_modal.icon_embargo")}
               </div>
@@ -672,7 +676,8 @@ export class HelpModal extends LitElement {
               class="flex flex-col items-center w-full md:w-1/3 mb-2 md:mb-0"
             >
               <div
-                class="text-gray-300 flex flex-col justify-start min-h-[3rem] w-full px-2 mb-1"
+                class="flex flex-col justify-start min-h-[3rem] w-full px-2 mb-1"
+                style="color: var(--modal-text-muted)"
               >
                 ${translateText("help_modal.icon_request")}
               </div>

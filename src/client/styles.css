@@ -1,8 +1,5 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-@import url("./styles/core/flag-animation.css");
 @import url("./styles/core/variables.css");
+@import url("./styles/core/flag-animation.css");
 @import url("./styles/core/typography.css");
 @import url("./styles/layout/header.css");
 @import url("./styles/layout/container.css");
@@ -11,6 +8,9 @@
 @import url("./styles/modal/chat.css");
 @import url("./styles/components/setting.css");
 @import url("./styles/components/controls.css");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 * {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -93,8 +93,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  background: rgba(30, 30, 30, 0.95);
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: var(--modal-card-bg, rgba(30, 30, 30, 0.95));
+  border: 2px solid var(--modal-card-border, rgba(255, 255, 255, 0.1));
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
@@ -102,18 +102,18 @@
 
 .option-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.3);
-  background: rgba(40, 40, 40, 0.95);
+  border-color: var(--primaryColor);
+  box-shadow: var(--modal-card-hover-shadow, 0 4px 12px rgba(139, 26, 26, 0.3));
 }
 
 .option-card.selected {
   border-color: var(--primaryColor);
-  background: rgba(229, 57, 53, 0.1);
+  background: var(--modal-card-selected-bg, rgba(229, 57, 53, 0.15));
 }
 
 .option-card-title {
   font-size: 14px;
-  color: #aaa;
+  color: var(--modal-card-text, #aaa);
   text-align: center;
   margin: 0 0 4px 0;
 }
@@ -121,10 +121,10 @@
 .option-image {
   width: 100%;
   aspect-ratio: 4/2;
-  color: #aaa;
+  color: var(--modal-card-text, #aaa);
   transition: transform 0.2s ease-in-out;
   border-radius: 8px;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--modal-card-image-bg, rgba(0, 0, 0, 0.1));
   font-size: 14px;
   display: flex;
   align-items: center;
@@ -142,7 +142,7 @@ label.option-card:hover {
 .checkbox-icon {
   width: 16px;
   height: 16px;
-  border: 2px solid #aaa;
+  border: 2px solid var(--modal-text-muted, #aaa);
   border-radius: 6px;
   margin: 4px;
   display: flex;
@@ -286,13 +286,13 @@ label.option-card:hover {
 }
 
 .random-map {
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  background: rgba(30, 30, 30, 0.95);
+  border: 2px solid var(--modal-card-border, rgba(255, 255, 255, 0.1));
+  background: var(--modal-card-bg, rgba(30, 30, 30, 0.95));
 }
 
 .random-map.selected {
   border: 2px solid var(--primaryColor);
-  background: rgba(229, 57, 53, 0.1);
+  background: var(--modal-card-selected-bg, rgba(229, 57, 53, 0.15));
 }
 
 #helpModal table {
@@ -337,7 +337,7 @@ label.option-card:hover {
 }
 
 #helpModal .icon {
-  background-color: white;
+  background-color: var(--modal-text, white);
   width: 32px;
   height: 32px;
 }
@@ -578,7 +578,7 @@ label.option-card:hover {
 }
 
 .options-section {
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--group-bg, rgba(0, 0, 0, 0.2));
   padding: 12px 24px 24px 24px;
   border-radius: 12px;
 }
@@ -586,7 +586,7 @@ label.option-card:hover {
 .option-title {
   margin: 0 0 16px 0;
   font-size: 20px;
-  color: #fff;
+  color: var(--modal-text, #fff);
   text-align: center;
 }
 
