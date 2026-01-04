@@ -151,7 +151,20 @@
     "max_timer": "Game length (minutes)",
     "disable_nukes": "Disable Nukes",
     "enables_title": "Enable Settings",
-    "start": "Start Game"
+    "start": "Start Game",
+    "save_template": "Save",
+    "save_template_title": "Save Settings Template",
+    "template_name_placeholder": "Enter template name...",
+    "export": "Export",
+    "load": "Load",
+    "load_file": "Load from File",
+    "organize_templates": "Organize Templates",
+    "no_templates": "No saved templates yet",
+    "rename": "Rename",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "save": "Save",
+    "done": "Done"
   },
   "token_login_modal": {
     "title": "Logging in...",

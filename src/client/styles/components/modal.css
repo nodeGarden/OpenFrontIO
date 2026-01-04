@@ -55,3 +55,37 @@ o-modal o-button {
     text-align: center;
   }
 }
+
+/* Modal footer content layout */
+.modal-footer-content {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.modal-footer-content game-template-manager {
+  flex: 1;
+}
+
+.modal-footer-content o-button {
+  margin: 0;
+  margin-left: auto;
+}
+
+@media (max-width: 640px) {
+  .modal-footer-content {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .modal-footer-content game-template-manager {
+    width: 100%;
+  }
+
+  .modal-footer-content o-button {
+    width: 100%;
+    margin-left: 0;
+  }
+}

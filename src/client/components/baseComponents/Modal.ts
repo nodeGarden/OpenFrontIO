@@ -9,6 +9,7 @@ export class OModal extends LitElement {
   @property({ type: String }) title = "";
   @property({ type: String }) translationKey = "";
   @property({ type: Boolean }) alwaysMaximized = false;
+  @property({ type: Boolean }) hasFooter = false;
   @property({ type: Function }) onClose?: () => void;
 
   private themeObserver: MutationObserver | null = null;
@@ -56,6 +57,8 @@ export class OModal extends LitElement {
       min-width: 340px;
       max-width: 860px;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
       box-shadow:
         0 25px 50px -12px rgba(0, 0, 0, 0.5),
         0 0 0 1px rgba(255, 255, 255, 0.1);
@@ -72,6 +75,10 @@ export class OModal extends LitElement {
       height: 60dvh;
     }
 
+    .c-modal__wrapper.has-footer {
+      max-height: 80dvh;
+    }
+
     .c-modal__header {
       position: relative;
       border-top-left-radius: 16px;
@@ -82,7 +89,8 @@ export class OModal extends LitElement {
       backdrop-filter: blur(12px);
       text-align: center;
       color: #fff;
-      padding: 1.2rem 2.4rem 1.2rem 1.4rem;
+      padding: 1rem 2.4rem 1rem 1.4rem;
+      flex-shrink: 0;
     }
 
     .c-modal__close {
@@ -112,8 +120,24 @@ export class OModal extends LitElement {
       padding: 1.4rem;
       max-height: 60dvh;
       overflow-y: auto;
+      flex: 1;
+      min-height: 0;
       border-bottom-left-radius: 16px;
       border-bottom-right-radius: 16px;
+    }
+
+    .c-modal__wrapper.has-footer .c-modal__content {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    .c-modal__footer {
+      background: #1a1a1aee;
+      padding: 1rem 1.4rem;
+      border-bottom-left-radius: 16px;
+      border-bottom-right-radius: 16px;
+      flex-shrink: 0;
+      backdrop-filter: blur(8px);
     }
 
     /* Light theme */
@@ -156,6 +180,11 @@ export class OModal extends LitElement {
       color: #1a1a1a;
     }
 
+    .c-modal__wrapper.light .c-modal__footer {
+      background: #e0f2fe;
+      border-top: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
     /* Dark theme CSS variables (default) */
     .c-modal__wrapper {
       --modal-bg: rgba(35, 35, 35, 0.85);
@@ -191,6 +220,7 @@ export class OModal extends LitElement {
     const wrapperClasses = [
       "c-modal__wrapper",
       this.alwaysMaximized ? "always-maximized" : "",
+      this.hasFooter ? "has-footer" : "",
       !this.isDarkMode ? "light" : "",
     ]
       .filter(Boolean)
@@ -213,6 +243,13 @@ export class OModal extends LitElement {
                 <section class="c-modal__content">
                   <slot></slot>
                 </section>
+                ${this.hasFooter
+                  ? html`
+                      <footer class="c-modal__footer">
+                        <slot name="footer"></slot>
+                      </footer>
+                    `
+                  : ""}
               </div>
             </aside>
           `

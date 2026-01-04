@@ -21,6 +21,11 @@ import "./components/baseComponents/Button";
 import "./components/baseComponents/Modal";
 import "./components/Difficulties";
 import "./components/FluentSlider";
+import "./components/GameTemplateManager";
+import {
+  GameTemplateManager,
+  GameTemplateSettings,
+} from "./components/GameTemplateManager";
 import "./components/Maps";
 import { fetchCosmetics } from "./Cosmetics";
 import { FlagInput } from "./FlagInput";
@@ -35,6 +40,9 @@ export class SinglePlayerModal extends LitElement {
     open: () => void;
     close: () => void;
   };
+  @query("game-template-manager")
+  private templateManager!: GameTemplateManager;
+
   @state() private selectedMap: GameMapType = GameMapType.World;
   @state() private selectedDifficulty: Difficulty = Difficulty.Medium;
   @state() private disableNations: boolean = false;
@@ -57,10 +65,26 @@ export class SinglePlayerModal extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     window.addEventListener("keydown", this.handleKeyDown);
+    this.addEventListener(
+      "get-current-settings",
+      this.handleGetCurrentSettings as EventListener,
+    );
+    this.addEventListener(
+      "load-template",
+      this.handleLoadTemplate as EventListener,
+    );
   }
 
   disconnectedCallback() {
     window.removeEventListener("keydown", this.handleKeyDown);
+    this.removeEventListener(
+      "get-current-settings",
+      this.handleGetCurrentSettings as EventListener,
+    );
+    this.removeEventListener(
+      "load-template",
+      this.handleLoadTemplate as EventListener,
+    );
     super.disconnectedCallback();
   }
 
@@ -71,9 +95,54 @@ export class SinglePlayerModal extends LitElement {
     }
   };
 
+  private handleGetCurrentSettings = (e: CustomEvent) => {
+    e.detail.settings = this.getCurrentSettings();
+  };
+
+  private getCurrentSettings(): GameTemplateSettings {
+    return {
+      selectedMap: this.selectedMap,
+      selectedDifficulty: this.selectedDifficulty,
+      disableNations: this.disableNations,
+      bots: this.bots,
+      infiniteGold: this.infiniteGold,
+      infiniteTroops: this.infiniteTroops,
+      compactMap: this.compactMap,
+      maxTimer: this.maxTimer,
+      maxTimerValue: this.maxTimerValue,
+      instantBuild: this.instantBuild,
+      randomSpawn: this.randomSpawn,
+      useRandomMap: this.useRandomMap,
+      gameMode: this.gameMode,
+      teamCount: this.teamCount,
+      disabledUnits: this.disabledUnits,
+    };
+  }
+
+  private handleLoadTemplate = (
+    e: CustomEvent<{ settings: GameTemplateSettings }>,
+  ) => {
+    const settings = e.detail.settings;
+    this.selectedMap = settings.selectedMap;
+    this.selectedDifficulty = settings.selectedDifficulty;
+    this.disableNations = settings.disableNations;
+    this.bots = settings.bots;
+    this.infiniteGold = settings.infiniteGold;
+    this.infiniteTroops = settings.infiniteTroops;
+    this.compactMap = settings.compactMap;
+    this.maxTimer = settings.maxTimer;
+    this.maxTimerValue = settings.maxTimerValue;
+    this.instantBuild = settings.instantBuild;
+    this.randomSpawn = settings.randomSpawn;
+    this.useRandomMap = settings.useRandomMap;
+    this.gameMode = settings.gameMode;
+    this.teamCount = settings.teamCount;
+    this.disabledUnits = settings.disabledUnits || [];
+  };
+
   render() {
     return html`
-      <o-modal title=${translateText("single_modal.title")}>
+      <o-modal title=${translateText("single_modal.title")} hasFooter>
         <div class="options-layout">
           <!-- Map Selection -->
           <div class="options-section">
@@ -411,11 +480,13 @@ export class SinglePlayerModal extends LitElement {
           </div>
         </div>
 
-        <o-button
-          title=${translateText("single_modal.start")}
-          @click=${this.startGame}
-          blockDesktop
-        ></o-button>
+        <div slot="footer" class="modal-footer-content">
+          <game-template-manager></game-template-manager>
+          <o-button
+            title=${translateText("single_modal.start")}
+            @click=${this.startGame}
+          ></o-button>
+        </div>
       </o-modal>
     `;
   }
