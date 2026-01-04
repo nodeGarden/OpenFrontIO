@@ -154,6 +154,14 @@ export async function startMaster() {
       if (readyWorkers.size === config.numWorkers()) {
         log.info("All workers ready, starting game scheduling");
 
+        // Check if public games are enabled
+        if (!config.enablePublicGames()) {
+          log.info(
+            "Public games disabled via ENABLE_PUBLIC_GAMES=false, skipping scheduling",
+          );
+          return;
+        }
+
         const scheduleLobbies = () => {
           schedulePublicGame(playlist).catch((error) => {
             log.error("Error scheduling public game:", error);

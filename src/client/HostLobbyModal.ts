@@ -185,7 +185,8 @@ export class HostLobbyModal extends LitElement {
                 ([categoryKey, maps]) => html`
                   <div class="w-full mb-4">
                     <h3
-                      class="text-lg font-semibold mb-2 text-center text-gray-300"
+                      class="text-lg font-semibold mb-2 text-center"
+                      style="color: var(--modal-text-muted)"
                     >
                       ${translateText(`map_categories.${categoryKey}`)}
                     </h3>
@@ -566,12 +567,12 @@ export class HostLobbyModal extends LitElement {
                     <span>${translateText("host_modal.player_immunity_duration")}</span>
                   </div>
                 </label>
-                
-                <hr style="width: 100%; border-top: 1px solid #444; margin: 16px 0;" />
+
+                <hr style="width: 100%; border-top: 1px solid var(--modal-border, #444); margin: 16px 0;" />
 
                 <!-- Individual disables for structures/weapons -->
                 <div
-                  style="margin: 8px 0 12px 0; font-weight: bold; color: #ccc; text-align: center;"
+                  style="margin: 8px 0 12px 0; font-weight: bold; color: var(--modal-text-muted, #ccc); text-align: center;"
                 >
                   ${translateText("host_modal.enables_title")}
                 </div>

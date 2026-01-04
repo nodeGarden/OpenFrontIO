@@ -75,7 +75,7 @@ export class StatsModal extends LitElement {
   private renderBody() {
     if (this.isLoading) {
       return html`
-        <div class="flex flex-col items-center justify-center p-6 text-white">
+        <div class="flex flex-col items-center justify-center p-6">
           <p class="mb-2 text-lg font-semibold">
             ${translateText("stats_modal.loading")}
           </p>
@@ -88,7 +88,7 @@ export class StatsModal extends LitElement {
 
     if (this.error) {
       return html`
-        <div class="flex flex-col items-center justify-center p-6 text-white">
+        <div class="flex flex-col items-center justify-center p-6">
           <p class="mb-4 text-center">${this.error}</p>
           <button
             class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm font-medium"
@@ -102,7 +102,7 @@ export class StatsModal extends LitElement {
 
     if (!this.data || this.data.clans.length === 0) {
       return html`
-        <div class="p-6 text-center text-gray-200">
+        <div class="p-6 text-center">
           <p class="text-lg font-semibold mb-2">
             ${translateText("stats_modal.no_stats")}
           </p>
@@ -115,7 +115,7 @@ export class StatsModal extends LitElement {
     const endDate = new Date(end);
 
     return html`
-      <div class="p-4 md:p-6 text-gray-200">
+      <div class="p-4 md:p-6">
         <div
           class="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2"
         >
@@ -123,7 +123,7 @@ export class StatsModal extends LitElement {
             <h2 class="text-xl font-semibold">
               ${translateText("stats_modal.clan_stats")}
             </h2>
-            <p class="text-xs text-gray-400 mt-1">
+            <p class="text-xs mt-1" style="color: var(--modal-text-muted)">
               ${startDate.toLocaleDateString()} &middot;
               ${endDate.toLocaleDateString()}
             </p>
@@ -133,7 +133,10 @@ export class StatsModal extends LitElement {
         <div class="overflow-x-auto">
           <table class="min-w-full text-xs md:text-sm">
             <thead>
-              <tr class="border-b border-gray-700 text-gray-300">
+              <tr
+                class="border-b border-gray-700"
+                style="color: var(--modal-text-muted)"
+              >
                 <th class="py-2 pr-3 text-left">
                   ${translateText("stats_modal.rank")}
                 </th>

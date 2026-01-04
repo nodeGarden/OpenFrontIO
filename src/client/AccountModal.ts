@@ -88,7 +88,7 @@ export class AccountModal extends LitElement {
     return html`
       <div class="p-6">
         <div class="mb-4">
-          <p class="text-white mb-4 text-center">
+          <p class="mb-4 text-center">
             ${translateText("account_modal.player_id", {
               id:
                 this.userMeResponse?.player?.publicId ??
@@ -97,7 +97,7 @@ export class AccountModal extends LitElement {
           </p>
         </div>
         <div class="mb-4 text-center">
-          <p class="text-white mb-4">${this.renderLoggedInAs()}</p>
+          <p class="mb-4">${this.renderLoggedInAs()}</p>
         </div>
         <div class="flex flex-col items-center mt-2 mb-4">
           <discord-user-header

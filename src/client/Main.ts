@@ -14,6 +14,11 @@ import { fetchCosmetics } from "./Cosmetics";
 import { crazyGamesSDK } from "./CrazyGamesSDK";
 import "./DarkModeButton";
 import { DarkModeButton } from "./DarkModeButton";
+import {
+  applyDevConfigSettings,
+  isDevFeatureEnabled,
+  loadDevConfig,
+} from "./DevConfig";
 import "./FlagInput";
 import { FlagInput } from "./FlagInput";
 import { FlagInputModal } from "./FlagInputModal";
@@ -122,11 +127,15 @@ class Client {
   private turnstileTokenPromise: Promise<{
     token: string;
     createdAt: number;
-  }> | null = null;
+  } | null> | null = null;
 
   constructor() {}
 
   async initialize(): Promise<void> {
+    // Load dev config early to ensure feature flags are available
+    await loadDevConfig();
+    applyDevConfigSettings();
+
     crazyGamesSDK.maybeInit();
     // Prefetch turnstile token so it is available when
     // the user joins a lobby.
@@ -358,11 +367,8 @@ class Client {
       }
     });
 
-    if (this.userSettings.darkMode()) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+    // Apply saved theme mode (light/dark/system) on startup
+    this.userSettings.applyTheme();
 
     // Attempt to join lobby
     this.handleUrl();
@@ -705,7 +711,12 @@ document.addEventListener("DOMContentLoaded", () => {
 async function getTurnstileToken(): Promise<{
   token: string;
   createdAt: number;
-}> {
+} | null> {
+  // Skip Turnstile if cloudflare is disabled in dev config
+  if (!isDevFeatureEnabled("cloudflare")) {
+    return null;
+  }
+
   // Wait for Turnstile script to load (handles slow connections)
   let attempts = 0;
   while (typeof window.turnstile === "undefined" && attempts < 100) {

@@ -1,4 +1,4 @@
-import { LitElement, css, html } from "lit";
+import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { GameMapType } from "../../core/game/Game";
 import { terrainMapFileLoader } from "../TerrainMapFileLoader";
@@ -58,54 +58,10 @@ export class MapDisplay extends LitElement {
   @state() private mapName: string | null = null;
   @state() private isLoading = true;
 
-  static styles = css`
-    .option-card {
-      width: 100%;
-      min-width: 100px;
-      max-width: 120px;
-      padding: 4px 4px 0 4px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(30, 30, 30, 0.95);
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.2s ease-in-out;
-    }
-
-    .option-card:hover {
-      transform: translateY(-2px);
-      border-color: rgba(255, 255, 255, 0.3);
-      background: rgba(40, 40, 40, 0.95);
-    }
-
-    .option-card.selected {
-      border-color: #4a9eff;
-      background: rgba(74, 158, 255, 0.1);
-    }
-
-    .option-card-title {
-      font-size: 14px;
-      color: #aaa;
-      text-align: center;
-      margin: 0 0 4px 0;
-    }
-
-    .option-image {
-      width: 100%;
-      aspect-ratio: 4/2;
-      color: #aaa;
-      transition: transform 0.2s ease-in-out;
-      border-radius: 8px;
-      background-color: rgba(255, 255, 255, 0.1);
-      font-size: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-  `;
+  // Use Light DOM to inherit global styles
+  createRenderRoot() {
+    return this;
+  }
 
   connectedCallback() {
     super.connectedCallback();

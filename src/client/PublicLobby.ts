@@ -11,6 +11,7 @@ import {
 } from "../core/game/Game";
 import { GameID, GameInfo } from "../core/Schemas";
 import { generateID } from "../core/Util";
+import { isDevFeatureEnabled } from "./DevConfig";
 import { PublicLobbySocket } from "./LobbySocket";
 import { JoinLobbyEvent } from "./Main";
 import { terrainMapFileLoader } from "./TerrainMapFileLoader";
@@ -37,6 +38,10 @@ export class PublicLobby extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
+    // Skip connecting to public lobbies if disabled in dev config
+    if (!isDevFeatureEnabled("publicLobbies")) {
+      return;
+    }
     this.lobbySocket.start();
   }
 

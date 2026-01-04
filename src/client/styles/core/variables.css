@@ -23,4 +23,32 @@
   --secondaryColorDark: #374151;
   --secondaryColorHoverDark: #4b5563;
   --fontColorDark: #f3f4f6;
+
+  /* Light theme modal variables (default) */
+  --modal-text: #1a1a1a;
+  --modal-text-muted: #555;
+  --modal-border: rgba(0, 0, 0, 0.15);
+  --modal-hover: rgba(0, 0, 0, 0.06);
+  --modal-card-bg: rgba(255, 255, 255, 0.95);
+  --modal-card-border: rgba(0, 0, 0, 0.15);
+  --modal-card-text: #333;
+  --modal-card-selected-bg: rgba(139, 26, 26, 0.15);
+  --modal-card-image-bg: rgba(0, 0, 0, 0.08);
+  --modal-card-hover-shadow: 0 4px 12px rgba(139, 26, 26, 0.25);
+  --group-bg: rgba(0, 0, 0, 0.04);
+}
+
+/* Dark theme modal variables */
+.dark {
+  --modal-text: #fff;
+  --modal-text-muted: #999;
+  --modal-border: rgba(255, 255, 255, 0.1);
+  --modal-hover: rgba(255, 255, 255, 0.08);
+  --modal-card-bg: rgba(30, 30, 30, 0.95);
+  --modal-card-border: rgba(255, 255, 255, 0.1);
+  --modal-card-text: #ccc;
+  --modal-card-selected-bg: rgba(229, 57, 53, 0.15);
+  --modal-card-image-bg: rgba(255, 255, 255, 0.1);
+  --modal-card-hover-shadow: 0 4px 12px rgba(139, 26, 26, 0.4);
+  --group-bg: rgba(0, 0, 0, 0.2);
 }

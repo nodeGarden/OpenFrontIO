@@ -1,0 +1,29 @@
+{
+  "features": {
+    "analytics": false,
+    "ads": false,
+    "cloudflare": false,
+    "publicLobbies": false
+  },
+  "settings": {
+    "display": {
+      "themeMode": "dark"
+    },
+    "interface": {
+      "showFPS": true
+    },
+    "graphics": {
+      "lowPerformanceMode": false
+    },
+    "controls": {
+      "disableRightClickMenu": true
+    },
+    "privacy": {
+      "anonymousMode": false
+    },
+    "audio": {
+      "backgroundMusicVolume": 0.5,
+      "effectsVolume": 0.5
+    }
+  }
+}
