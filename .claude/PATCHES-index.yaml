@@ -1,0 +1,134 @@
+# OpenFront Custom Patches Registry
+# This YAML file serves as the master index for all available patches
+# Agents can parse this to determine which patches to apply
+
+version: "1.0.0"
+last_updated: "2026-02-14"
+
+patches:
+  - id: vite-logger
+    name: "Vite Custom Logger"
+    file: "patches/PATCH-vite-logger.md"
+    enabled: true
+    category: "build"
+    priority: "medium"
+    files_modified: 1
+    dependencies: []
+    tags: ["build", "vite", "logging", "warnings"]
+    description: "Suppress noisy Vite build warnings"
+
+  - id: npmrc
+    name: "NPM/PNPM Logging Suppression"
+    file: "patches/PATCH-npmrc.md"
+    enabled: true
+    category: "build"
+    priority: "low"
+    files_modified: 1
+    dependencies: []
+    tags: ["build", "npm", "pnpm", "logging"]
+    description: "Suppress npm/pnpm package manager warnings"
+
+  - id: console-override
+    name: "Console Logging Override"
+    file: "patches/PATCH-console-override.md"
+    enabled: true
+    category: "logging"
+    priority: "high"
+    files_modified: 1
+    dependencies: ["custom-config"]
+    tags: ["logging", "console", "client", "debugging"]
+    description: "Suppress console.log and console.info globally"
+
+  - id: disable-ads
+    name: "Disable Ads"
+    file: "patches/PATCH-disable-ads.md"
+    enabled: true
+    category: "features"
+    priority: "high"
+    files_modified: 1
+    dependencies: ["custom-config", "console-override"]
+    tags: ["ads", "features", "client", "ui"]
+    description: "Disable all advertisements in the application"
+
+  - id: disable-lobby-polling
+    name: "Disable Lobby Polling"
+    file: "patches/PATCH-disable-lobby-polling.md"
+    enabled: true
+    category: "features"
+    priority: "medium"
+    files_modified: 1
+    dependencies: ["custom-config"]
+    tags: ["lobby", "websocket", "client", "multiplayer", "networking"]
+    description: "Disable lobby WebSocket polling and suppress related errors"
+
+  - id: suppress-econnrefused
+    name: "Suppress ECONNREFUSED Errors"
+    file: "patches/PATCH-suppress-econnrefused.md"
+    enabled: true
+    category: "logging"
+    priority: "high"
+    files_modified: 4
+    dependencies: []
+    tags: ["logging", "server", "errors", "networking", "services"]
+    description: "Suppress connection refused errors for optional dev services"
+
+  - id: suppress-config-logs
+    name: "Suppress Config Loader Logs"
+    file: "patches/PATCH-suppress-config-logs.md"
+    enabled: true
+    category: "logging"
+    priority: "low"
+    files_modified: 1
+    dependencies: []
+    tags: ["logging", "server", "config", "initialization"]
+    description: "Suppress configuration loading log messages"
+
+  - id: public-games-env
+    name: "Public Games Environment Control"
+    file: "patches/PATCH-public-games-env.md"
+    enabled: true
+    category: "features"
+    priority: "medium"
+    files_modified: 1
+    dependencies: ["env-file"]
+    tags: ["server", "multiplayer", "lobby", "environment", "games"]
+    description: "Disable public game scheduling via environment variable"
+
+  - id: suppress-server-logs
+    name: "Suppress Server Info Logs"
+    file: "patches/PATCH-suppress-server-logs.md"
+    enabled: true
+    category: "logging"
+    priority: "low"
+    files_modified: 2
+    dependencies: []
+    tags: ["logging", "server", "info", "debugging"]
+    description: "Suppress noisy server informational logs"
+
+# Special dependencies (not patches themselves)
+dependencies:
+  - id: custom-config
+    name: "Custom Config File"
+    file: ".claude/custom-config.ts"
+    description: "TypeScript configuration file for feature toggles"
+    required_by: ["console-override", "disable-ads", "disable-lobby-polling"]
+
+  - id: env-file
+    name: "Environment Variables"
+    file: ".env"
+    description: "Environment configuration file"
+    required_by: ["public-games-env"]
+
+# Patch application order (based on dependencies)
+application_order:
+  - "custom-config" # Must exist first
+  - "env-file" # Environment setup
+  - "npmrc" # Build tooling
+  - "vite-logger" # Build tooling
+  - "console-override" # Depends on custom-config
+  - "disable-ads" # Depends on console-override, custom-config
+  - "disable-lobby-polling" # Depends on custom-config
+  - "suppress-config-logs" # Independent
+  - "suppress-server-logs" # Independent
+  - "suppress-econnrefused" # Independent
+  - "public-games-env" # Depends on env-file

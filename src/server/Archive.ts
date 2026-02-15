@@ -39,9 +39,21 @@ export async function archive(gameRecord: GameRecord) {
       return;
     }
   } catch (error) {
-    log.error(`error archiving game record: ${error}`, {
-      gameID: gameRecord.info.gameID,
-    });
+    // CUSTOM: Suppress ECONNREFUSED errors (expected in dev when archive service isn't running)
+    const isConnectionRefused =
+      error &&
+      typeof error === "object" &&
+      "cause" in error &&
+      error.cause &&
+      typeof error.cause === "object" &&
+      "code" in error.cause &&
+      error.cause.code === "ECONNREFUSED";
+
+    if (!isConnectionRefused) {
+      log.error(`error archiving game record: ${error}`, {
+        gameID: gameRecord.info.gameID,
+      });
+    }
     return;
   }
 }
@@ -70,9 +82,21 @@ export async function readGameRecord(
     }
     return GameRecordSchema.parse(record);
   } catch (error) {
-    log.error(`error reading game record: ${error}`, {
-      gameID: gameId,
-    });
+    // CUSTOM: Suppress ECONNREFUSED errors (expected in dev when archive service isn't running)
+    const isConnectionRefused =
+      error &&
+      typeof error === "object" &&
+      "cause" in error &&
+      error.cause &&
+      typeof error.cause === "object" &&
+      "code" in error.cause &&
+      error.cause.code === "ECONNREFUSED";
+
+    if (!isConnectionRefused) {
+      log.error(`error reading game record: ${error}`, {
+        gameID: gameId,
+      });
+    }
     return null;
   }
 }

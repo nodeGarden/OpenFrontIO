@@ -28,9 +28,10 @@ export class PrivilegeRefresher {
   }
 
   public async start() {
-    this.log.info(
-      `Starting privilege refresher with interval ${this.refreshInterval}`,
-    );
+    // CUSTOM: Suppressed noisy info log
+    // this.log.info(
+    //   `Starting privilege refresher with interval ${this.refreshInterval}`,
+    // );
     startPolling(() => this.loadPrivilegeChecker(), this.refreshInterval);
   }
 
@@ -39,7 +40,8 @@ export class PrivilegeRefresher {
   }
 
   private async loadPrivilegeChecker(): Promise<void> {
-    this.log.info(`Loading privilege checker`);
+    // CUSTOM: Suppressed noisy info log
+    // this.log.info(`Loading privilege checker`);
     try {
       const fetchWithTimeout = async (url: string) => {
         try {
@@ -92,9 +94,24 @@ export class PrivilegeRefresher {
         base64url.decode,
         bannedWords,
       );
-      this.log.info(`Privilege checker loaded successfully`);
+      // CUSTOM: Suppressed noisy info log
+      // this.log.info(`Privilege checker loaded successfully`);
     } catch (error) {
-      this.log.error(`Failed to load privilege checker:`, error);
+      // CUSTOM: Suppress ECONNREFUSED and network errors (expected in dev when cosmetics service isn't running)
+      const hasECONNREFUSED =
+        error &&
+        typeof error === "object" &&
+        "cause" in error &&
+        error.cause &&
+        typeof error.cause === "object" &&
+        "code" in error.cause &&
+        error.cause.code === "ECONNREFUSED";
+      const hasNetworkError =
+        error instanceof Error && error.message.includes("network error");
+
+      if (!hasECONNREFUSED && !hasNetworkError) {
+        this.log.error(`Failed to load privilege checker:`, error);
+      }
       throw error;
     }
   }

@@ -10,6 +10,33 @@ import tsconfigPaths from "vite-tsconfig-paths";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// CUSTOM: Custom logger to suppress specific warnings
+function createCustomLogger() {
+  const logger = {
+    warn: (msg: string, options?: any) => {
+      // Suppress PostCSS @import warnings
+      if (msg.includes("@import must precede all other statements")) return;
+      // Suppress public directory import warnings
+      if (msg.includes("Assets in public directory cannot be imported")) return;
+      // Suppress public directory path warnings
+      if (
+        msg.includes(
+          "Files in the public directory are served at the root path",
+        )
+      )
+        return;
+      // Default: show the warning
+      console.warn(msg, options);
+    },
+    info: (msg: string) => console.info(msg),
+    error: (msg: string, options?: any) => console.error(msg, options),
+    warnOnce: (msg: string, options?: any) => console.warn(msg, options),
+    clearScreen: () => {},
+    hasWarned: false,
+  };
+  return logger;
+}
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   const isProduction = mode === "production";
@@ -33,6 +60,8 @@ export default defineConfig(({ mode }) => {
   };
 
   return {
+    // CUSTOM: Use custom logger to suppress noisy warnings
+    customLogger: createCustomLogger(),
     test: {
       globals: true,
       environment: "jsdom",

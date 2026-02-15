@@ -110,6 +110,11 @@ export class MasterLobbyService {
   }
 
   private async maybeScheduleLobby() {
+    // CUSTOM: Respect ENABLE_PUBLIC_GAMES environment variable
+    if (process.env.ENABLE_PUBLIC_GAMES === "false") {
+      return;
+    }
+
     const lobbiesByType = this.getAllLobbies();
 
     for (const type of Object.keys(lobbiesByType) as PublicGameType[]) {

@@ -20,7 +20,8 @@ export async function getConfig(
       return new DevConfig(sc, gameConfig, userSettings, isReplay);
     case GameEnv.Preprod:
     case GameEnv.Prod:
-      console.log("using prod config");
+      // CUSTOM: Suppressed noisy log
+      // console.log("using prod config");
       return new DefaultConfig(sc, gameConfig, userSettings, isReplay);
     default:
       throw Error(`unsupported server configuration: ${Env.GAME_ENV}`);
@@ -38,8 +39,9 @@ export async function getServerConfigFromClient(): Promise<ServerConfig> {
     );
   }
   const config = await response.json();
+  // CUSTOM: Suppressed noisy log
   // Log the retrieved configuration
-  console.log("Server config loaded:", config);
+  // console.log("Server config loaded:", config);
 
   cachedSC = getServerConfig(config.game_env);
   return cachedSC;
@@ -51,13 +53,16 @@ export function getServerConfigFromServer(): ServerConfig {
 export function getServerConfig(gameEnv: string) {
   switch (gameEnv) {
     case "dev":
-      console.log("using dev server config");
+      // CUSTOM: Suppressed noisy log
+      // console.log("using dev server config");
       return new DevServerConfig();
     case "staging":
-      console.log("using preprod server config");
+      // CUSTOM: Suppressed noisy log
+      // console.log("using preprod server config");
       return preprodConfig;
     case "prod":
-      console.log("using prod server config");
+      // CUSTOM: Suppressed noisy log
+      // console.log("using prod server config");
       return prodConfig;
     default:
       throw Error(`unsupported server configuration: ${gameEnv}`);

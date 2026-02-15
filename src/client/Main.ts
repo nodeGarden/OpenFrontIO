@@ -1,4 +1,5 @@
 import version from "resources/version.txt?raw";
+import { customConfig } from "../../.claude/custom-config";
 import { UserMeResponse } from "../core/ApiSchemas";
 import { EventBus } from "../core/EventBus";
 import { GAME_ID_REGEX, GameRecord, GameStartInfo } from "../core/Schemas";
@@ -63,6 +64,14 @@ import "./styles/core/variables.css";
 import "./styles/layout/container.css";
 import "./styles/layout/header.css";
 import "./styles/modal/chat.css";
+
+// CUSTOM: Override console.log and console.info based on customConfig
+// This keeps console.error and console.warn functional
+if (!customConfig.enableInfoLogging) {
+  const noop = () => {};
+  console.log = noop;
+  console.info = noop;
+}
 
 function updateAccountNavButton(userMeResponse: UserMeResponse | false) {
   const button = document.getElementById("nav-account-button");
@@ -463,7 +472,11 @@ class Client {
         !crazyGamesSDK.isOnCrazyGames() &&
         ((userMeResponse || null)?.player?.flares?.length ?? 0) > 0;
       console.log("ads enabled: ", hasLinkedAccount);
-      window.adsEnabled = !hasLinkedAccount && !crazyGamesSDK.isOnCrazyGames();
+      // CUSTOM: Use customConfig to control ads
+      window.adsEnabled =
+        customConfig.enableAds &&
+        !hasLinkedAccount &&
+        !crazyGamesSDK.isOnCrazyGames();
       document.dispatchEvent(
         new CustomEvent("userMeResponse", {
           detail: userMeResponse,

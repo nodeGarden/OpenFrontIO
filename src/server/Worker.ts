@@ -562,19 +562,33 @@ async function startMatchmakingPolling(gm: GameManager) {
         }
 
         const data = await response.json();
-        log.info(`Lobby poll successful:`, data);
+        // CUSTOM: Suppressed noisy info log
+        // log.info(`Lobby poll successful:`, data);
 
         if (data.assignment) {
           const gameConfig = playlist.get1v1Config();
           const game = gm.createGame(gameId, gameConfig);
           setTimeout(() => {
             // Wait a few seconds to allow clients to connect.
-            console.log(`Starting game ${gameId}`);
+            // CUSTOM: Suppressed noisy log
+            // console.log(`Starting game ${gameId}`);
             game.start();
           }, 7000);
         }
       } catch (error) {
-        log.error(`Error polling lobby:`, error);
+        // CUSTOM: Suppress ECONNREFUSED errors (expected in dev when matchmaking service isn't running)
+        const isConnectionRefused =
+          error &&
+          typeof error === "object" &&
+          "cause" in error &&
+          error.cause &&
+          typeof error.cause === "object" &&
+          "code" in error.cause &&
+          error.cause.code === "ECONNREFUSED";
+
+        if (!isConnectionRefused) {
+          log.error(`Error polling lobby:`, error);
+        }
       }
     },
     5000 + Math.random() * 1000,

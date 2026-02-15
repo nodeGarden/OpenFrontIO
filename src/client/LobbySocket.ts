@@ -1,3 +1,4 @@
+import { customConfig } from "../../.claude/custom-config";
 import { getServerConfigFromClient } from "../core/configuration/ConfigLoader";
 import { PublicGames, PublicGamesSchema } from "../core/Schemas";
 
@@ -31,6 +32,10 @@ export class PublicLobbySocket {
   }
 
   async start() {
+    // CUSTOM: Don't start lobby polling if disabled
+    if (!customConfig.enableLobbyPolling) {
+      return;
+    }
     this.wsConnectionAttempts = 0;
     // Get config to determine number of workers, then pick a random one
     const config = await getServerConfigFromClient();
@@ -81,15 +86,19 @@ export class PublicLobbySocket {
       );
       this.onLobbiesUpdate(publicGames);
     } catch (error) {
-      console.error("Error parsing WebSocket message:", error);
+      if (customConfig.showLobbyPollingErrors) {
+        console.error("Error parsing WebSocket message:", error);
+      }
       if (this.ws && this.ws.readyState === WebSocket.OPEN) {
         try {
           this.ws.close();
         } catch (closeError) {
-          console.error(
-            "Error closing WebSocket after parse failure:",
-            closeError,
-          );
+          if (customConfig.showLobbyPollingErrors) {
+            console.error(
+              "Error closing WebSocket after parse failure:",
+              closeError,
+            );
+          }
         }
       }
     }
@@ -102,24 +111,32 @@ export class PublicLobbySocket {
       this.wsConnectionAttempts++;
     }
     if (this.wsConnectionAttempts >= this.maxWsAttempts) {
-      console.error("Max WebSocket attempts reached");
+      if (customConfig.showLobbyPollingErrors) {
+        console.error("Max WebSocket attempts reached");
+      }
     } else {
       this.scheduleReconnect();
     }
   }
 
   private handleError(error: Event) {
-    console.error("WebSocket error:", error);
+    if (customConfig.showLobbyPollingErrors) {
+      console.error("WebSocket error:", error);
+    }
   }
 
   private handleConnectError(error: unknown) {
-    console.error("Error connecting WebSocket:", error);
+    if (customConfig.showLobbyPollingErrors) {
+      console.error("Error connecting WebSocket:", error);
+    }
     if (!this.wsAttemptCounted) {
       this.wsAttemptCounted = true;
       this.wsConnectionAttempts++;
     }
     if (this.wsConnectionAttempts >= this.maxWsAttempts) {
-      alert("error connecting to game service");
+      if (customConfig.showLobbyPollingErrors) {
+        alert("error connecting to game service");
+      }
     } else {
       this.scheduleReconnect();
     }

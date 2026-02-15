@@ -14,7 +14,21 @@ export function startPolling(task: () => Promise<void>, intervalMs: number) {
   const runLoop = () => {
     task()
       .catch((error) => {
-        log.error("Error in polling loop:", error);
+        // CUSTOM: Suppress ECONNREFUSED and network errors (expected in dev when services aren't running)
+        const hasECONNREFUSED =
+          error &&
+          typeof error === "object" &&
+          "cause" in error &&
+          error.cause &&
+          typeof error.cause === "object" &&
+          "code" in error.cause &&
+          error.cause.code === "ECONNREFUSED";
+        const hasNetworkError =
+          error instanceof Error && error.message.includes("network error");
+
+        if (!hasECONNREFUSED && !hasNetworkError) {
+          log.error("Error in polling loop:", error);
+        }
       })
       .finally(() => {
         setTimeout(runLoop, intervalMs);

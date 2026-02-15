@@ -27,6 +27,7 @@ export default [
             "__mocks__/fileMock.js",
             "eslint.config.js",
             "scripts/sync-assets.mjs",
+            ".claude/scripts/dev-stop.js",
           ],
         },
         tsconfigRootDir: import.meta.dirname,
