@@ -24,6 +24,7 @@
 | ✅     | [Suppress Config Logs](patches/PATCH-suppress-config-logs.md)   | Low      | 1     | Logging  | Suppress configuration loading log messages              |
 | ✅     | [Public Games Env](patches/PATCH-public-games-env.md)           | Medium   | 1     | Features | Disable public game scheduling via environment variable  |
 | ✅     | [Suppress Server Logs](patches/PATCH-suppress-server-logs.md)   | Low      | 2     | Logging  | Suppress noisy server informational logs                 |
+| ❌     | [Game Template Manager](patches/PATCH-game-template-manager.md) | Medium   | 3     | UI       | Save/load game setting templates with favorite support   |
 
 **Legend**: ✅ Enabled | ❌ Disabled
 
@@ -46,6 +47,10 @@
 - **Disable Ads** - Remove advertisements
 - **Disable Lobby Polling** - Disable public lobby WebSocket
 - **Public Games Env** - Control public game scheduling
+
+### 🎨 UI (1 patch)
+
+- **Game Template Manager** - Save/load game setting templates with favorite support
 
 ## Dependencies
 
@@ -128,11 +133,11 @@ pnpm dev:server
 
 ## Patch Statistics
 
-- **Total Patches**: 9
+- **Total Patches**: 10
 - **Enabled**: 9
-- **Disabled**: 0
-- **Total Files Modified**: 14
-- **Categories**: 3 (Build, Logging, Features)
+- **Disabled**: 1
+- **Total Files Modified**: 17
+- **Categories**: 4 (Build, Logging, Features, UI)
 
 ## Format Options
 

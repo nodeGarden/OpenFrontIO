@@ -3,7 +3,7 @@
 # Agents can parse this to determine which patches to apply
 
 version: "1.0.0"
-last_updated: "2026-02-14"
+last_updated: "2026-02-15"
 
 patches:
   - id: vite-logger
@@ -104,6 +104,20 @@ patches:
     dependencies: []
     tags: ["logging", "server", "info", "debugging"]
     description: "Suppress noisy server informational logs"
+
+  - id: game-template-manager
+    name: "Game Template Manager"
+    file: "patches/PATCH-game-template-manager.md"
+    enabled: false
+    category: "ui"
+    priority: "medium"
+    files_modified: 3
+    files_created: 1
+    dependencies: []
+    tags: ["ui", "features", "templates", "single-player", "settings", "ux"]
+    description: "Save/load game setting templates with favorite support"
+    source_branch: "dev-2"
+    source_commits: ["546653292", "0b06ccc8e", "77bc7b08b", "b5262f955"]
 
 # Special dependencies (not patches themselves)
 dependencies:

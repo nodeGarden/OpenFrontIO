@@ -74,10 +74,14 @@ Your previous work included two distinct configuration approaches:
    - Nested settings structure (Commit: c1a6a7de9)
    - Status: ❌ Not restored
 
-7. **Game Setting Templates** (Commits: b5262f955, b6bbefeac)
+7. **Game Setting Templates** (Commits: b5262f955, b6bbefeac, 546653292, 0b06ccc8e, 77bc7b08b)
    - Templates for SinglePlayerModal
    - Quick game setup presets
-   - Status: ❌ Not restored
+   - Save/load game settings with favorite support
+   - Visual feedback when loading favorite template
+   - Import/Export template functionality
+   - Status: ✅ **Documented as patch** (see `.claude/patches/PATCH-game-template-manager.md`)
+   - Source branch: `dev-2`
 
 8. **Local Dev Convenience Scripts** (Commit: 9b856263d)
    - Convenience scripts for local development

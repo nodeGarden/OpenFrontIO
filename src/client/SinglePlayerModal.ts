@@ -1,5 +1,5 @@
 import { TemplateResult, html } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { customElement, query, state } from "lit/decorators.js";
 import { translateText } from "../client/Utils";
 import { UserMeResponse } from "../core/ApiSchemas";
 import {
@@ -20,6 +20,12 @@ import { BaseModal } from "./components/BaseModal";
 import "./components/GameConfigSettings";
 import "./components/ToggleInputCard";
 import { modalHeader } from "./components/ui/ModalHeader";
+// CUSTOM: Game Template Manager integration
+import "./components/GameTemplateManager";
+import {
+  GameTemplateManager,
+  GameTemplateSettings,
+} from "./components/GameTemplateManager";
 import { getPlayerCosmetics } from "./Cosmetics";
 import { crazyGamesSDK } from "./CrazyGamesSDK";
 import { JoinLobbyEvent } from "./Main";
@@ -88,11 +94,33 @@ export class SinglePlayerModal extends BaseModal {
     ...DEFAULT_OPTIONS.disabledUnits,
   ];
 
+  // CUSTOM: Template manager state
+  @state() private hasFavoriteTemplate: boolean = false;
+  @state() private favoriteJustLoaded: boolean = false;
+
+  @query("game-template-manager")
+  private templateManager!: GameTemplateManager;
+
+  private favoriteLoadedTimeout?: number;
+
   connectedCallback() {
     super.connectedCallback();
     document.addEventListener(
       "userMeResponse",
       this.handleUserMeResponse as EventListener,
+    );
+    // CUSTOM: Template manager event listeners
+    this.addEventListener(
+      "get-current-settings",
+      this.handleGetCurrentSettings as EventListener,
+    );
+    this.addEventListener(
+      "load-template",
+      this.handleLoadTemplate as EventListener,
+    );
+    this.addEventListener(
+      "templates-changed",
+      this.handleTemplatesChanged as EventListener,
     );
   }
 
@@ -113,6 +141,80 @@ export class SinglePlayerModal extends BaseModal {
   ) => {
     this.userMeResponse = event.detail;
     this.applyAchievements(event.detail);
+  };
+
+  // CUSTOM: Template manager event handlers
+  private handleGetCurrentSettings = (
+    event: CustomEvent<{ settings?: GameTemplateSettings }>,
+  ) => {
+    event.detail.settings = {
+      selectedMap: this.selectedMap,
+      selectedDifficulty: this.selectedDifficulty,
+      disableNations: this.disableNations,
+      bots: this.bots,
+      infiniteGold: this.infiniteGold,
+      infiniteTroops: this.infiniteTroops,
+      compactMap: this.compactMap,
+      maxTimer: this.maxTimer,
+      maxTimerValue: this.maxTimerValue,
+      instantBuild: this.instantBuild,
+      randomSpawn: this.randomSpawn,
+      useRandomMap: this.useRandomMap,
+      gameMode: this.gameMode,
+      teamCount: this.teamCount,
+      disabledUnits: this.disabledUnits,
+    };
+  };
+
+  private handleLoadTemplate = (
+    event: CustomEvent<{ settings: GameTemplateSettings }>,
+  ) => {
+    const settings = event.detail.settings;
+    this.selectedMap = settings.selectedMap;
+    this.selectedDifficulty = settings.selectedDifficulty;
+    this.disableNations = settings.disableNations;
+    this.bots = settings.bots;
+    this.infiniteGold = settings.infiniteGold;
+    this.infiniteTroops = settings.infiniteTroops;
+    this.compactMap = settings.compactMap;
+    this.maxTimer = settings.maxTimer;
+    this.maxTimerValue = settings.maxTimerValue;
+    this.instantBuild = settings.instantBuild;
+    this.randomSpawn = settings.randomSpawn;
+    this.useRandomMap = settings.useRandomMap;
+    this.gameMode = settings.gameMode;
+    this.teamCount = settings.teamCount;
+    this.disabledUnits = settings.disabledUnits;
+  };
+
+  private handleTemplatesChanged = (
+    event: CustomEvent<{ favoriteTemplate: any }>,
+  ) => {
+    this.hasFavoriteTemplate = event.detail.favoriteTemplate !== null;
+  };
+
+  private loadFavoriteTemplate = () => {
+    const favoriteTemplate = this.templateManager?.getFavoriteTemplate();
+    if (favoriteTemplate) {
+      this.handleLoadTemplate(
+        new CustomEvent("load-template", {
+          detail: { settings: favoriteTemplate.settings },
+        }),
+      );
+
+      // Show confirmation
+      this.favoriteJustLoaded = true;
+
+      // Clear existing timeout if any
+      if (this.favoriteLoadedTimeout) {
+        clearTimeout(this.favoriteLoadedTimeout);
+      }
+
+      // Reset after 2.5 seconds
+      this.favoriteLoadedTimeout = window.setTimeout(() => {
+        this.favoriteJustLoaded = false;
+      }, 2500);
+    }
   };
 
   private renderNotLoggedInBanner(): TemplateResult {
@@ -323,6 +425,76 @@ export class SinglePlayerModal extends BaseModal {
             @option-toggle-changed=${this.handleConfigOptionToggleChanged}
             @unit-toggle-changed=${this.handleConfigUnitToggleChanged}
           ></game-config-settings>
+
+          <!-- CUSTOM: Template Manager -->
+          <div class="mt-6 pt-6 border-t border-white/10">
+            <h3
+              class="text-sm font-bold uppercase tracking-wider text-white/70 mb-3"
+            >
+              ${translateText("single_modal.templates_section") || "Templates"}
+            </h3>
+            <game-template-manager>
+              ${this.hasFavoriteTemplate
+                ? html`
+                    <button
+                      slot="quick-profile"
+                      @click=${this.loadFavoriteTemplate}
+                      class="inline-flex items-center gap-2 px-4 py-3 text-sm font-bold tracking-wider uppercase rounded-lg border-2 transition-all cursor-pointer"
+                      title="${translateText(
+                        "single_modal.load_quick_profile",
+                      ) || "Load your favorite template"}"
+                      style="${this.favoriteJustLoaded
+                        ? "background: rgba(34, 197, 94, 0.2); border-color: rgba(34, 197, 94, 0.5); color: #22c55e; font-size: 16px;"
+                        : "background: rgba(251, 191, 36, 0.15); border-color: rgba(251, 191, 36, 0.3); color: #fbbf24; font-size: 16px;"}"
+                    >
+                      ${this.favoriteJustLoaded
+                        ? html`
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="2"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              style="color: #22c55e; animation: checkmark-pop 0.3s ease-out;"
+                            >
+                              <path d="M20 6 9 17l-5-5" />
+                            </svg>
+                            <span
+                              >${translateText("single_modal.profile_loaded") ||
+                              "Loaded!"}</span
+                            >
+                          `
+                        : html`
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                              stroke="currentColor"
+                              stroke-width="2"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              style="color: #fbbf24;"
+                            >
+                              <polygon
+                                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                              />
+                            </svg>
+                            <span
+                              >${translateText("single_modal.quick_profile") ||
+                              "Quick Profile"}</span
+                            >
+                          `}
+                    </button>
+                  `
+                : html``}
+            </game-template-manager>
+          </div>
         </div>
 
         <!-- Footer Action -->
