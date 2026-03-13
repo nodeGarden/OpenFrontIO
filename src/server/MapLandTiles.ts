@@ -9,7 +9,9 @@ const log = logger.child({ component: "MapLandTiles" });
 
 // Gets or creates the map loader, uses FetchGameMapLoader pointing to the master server.
 function getMapLoader(): GameMapLoader {
-  mapLoader ??= new FetchGameMapLoader("http://localhost:3000/maps");
+  // CUSTOM: env-ports — read master port from environment
+  const port = process.env.OPENFRONT_SERVER_PORT ?? "3000";
+  mapLoader ??= new FetchGameMapLoader(`http://localhost:${port}/maps`);
   return mapLoader;
 }
 

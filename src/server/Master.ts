@@ -131,7 +131,8 @@ export async function startMaster() {
     );
   });
 
-  const PORT = 3000;
+  // CUSTOM: env-ports — read master port from environment
+  const PORT = parseInt(process.env.OPENFRONT_SERVER_PORT ?? "3000", 10);
   server.listen(PORT, () => {
     log.info(`Master HTTP server listening on port ${PORT}`);
   });

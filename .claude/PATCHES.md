@@ -24,6 +24,7 @@
 | ✅     | [Suppress Config Logs](patches/PATCH-suppress-config-logs.md)   | Low      | 1     | Logging  | Suppress configuration loading log messages              |
 | ✅     | [Public Games Env](patches/PATCH-public-games-env.md)           | Medium   | 1     | Features | Disable public game scheduling via environment variable  |
 | ✅     | [Suppress Server Logs](patches/PATCH-suppress-server-logs.md)   | Low      | 2     | Logging  | Suppress noisy server informational logs                 |
+| ✅     | [Env Ports](patches/PATCH-env-ports.md)                         | High     | 4     | Features | Configure all game service ports via .env file           |
 | ❌     | [Game Template Manager](patches/PATCH-game-template-manager.md) | Medium   | 3     | UI       | Save/load game setting templates with favorite support   |
 
 **Legend**: ✅ Enabled | ❌ Disabled
@@ -42,11 +43,12 @@
 - **Suppress Config Logs** - Configuration loading log suppression
 - **Suppress Server Logs** - General server log suppression
 
-### ✨ Features (3 patches)
+### ✨ Features (4 patches)
 
 - **Disable Ads** - Remove advertisements
 - **Disable Lobby Polling** - Disable public lobby WebSocket
 - **Public Games Env** - Control public game scheduling
+- **Env Ports** - Configure all service ports via .env
 
 ### 🎨 UI (1 patch)
 
@@ -133,10 +135,10 @@ pnpm dev:server
 
 ## Patch Statistics
 
-- **Total Patches**: 10
-- **Enabled**: 9
+- **Total Patches**: 11
+- **Enabled**: 10
 - **Disabled**: 1
-- **Total Files Modified**: 17
+- **Total Files Modified**: 21
 - **Categories**: 4 (Build, Logging, Features, UI)
 
 ## Format Options

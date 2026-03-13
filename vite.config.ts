@@ -59,6 +59,11 @@ export default defineConfig(({ mode }) => {
     return undefined;
   };
 
+  // CUSTOM: env-ports — read ports from .env
+  const clientPort = parseInt(env.OPENFRONT_CLIENT_PORT || "9000", 10);
+  const serverPort = parseInt(env.OPENFRONT_SERVER_PORT || "3000", 10);
+  const workerBasePort = parseInt(env.OPENFRONT_WORKER_BASE_PORT || "3001", 10);
+
   return {
     // CUSTOM: Use custom logger to suppress noisy warnings
     customLogger: createCustomLogger(),
@@ -111,7 +116,7 @@ export default defineConfig(({ mode }) => {
 
     define: {
       "process.env.WEBSOCKET_URL": JSON.stringify(
-        isProduction ? "" : "localhost:3000",
+        isProduction ? "" : `localhost:${serverPort}`,
       ),
       "process.env.GAME_ENV": JSON.stringify(isProduction ? "prod" : "dev"),
       "process.env.STRIPE_PUBLISHABLE_KEY": JSON.stringify(
@@ -135,18 +140,18 @@ export default defineConfig(({ mode }) => {
     },
 
     server: {
-      port: 9000,
+      port: clientPort, // CUSTOM: env-ports
       // Automatically open the browser when the server starts
       open: process.env.SKIP_BROWSER_OPEN !== "true",
       proxy: {
         "/lobbies": {
-          target: "ws://localhost:3000",
+          target: `ws://localhost:${serverPort}`, // CUSTOM: env-ports
           ws: true,
           changeOrigin: true,
         },
         // Worker proxies
         "/w0": {
-          target: "ws://localhost:3001",
+          target: `ws://localhost:${workerBasePort}`, // CUSTOM: env-ports
           ws: true,
           secure: false,
           changeOrigin: true,
@@ -154,7 +159,7 @@ export default defineConfig(({ mode }) => {
           rewrite: (path) => path.replace(/^\/w0/, ""),
         },
         "/w1": {
-          target: "ws://localhost:3002",
+          target: `ws://localhost:${workerBasePort + 1}`, // CUSTOM: env-ports
           ws: true,
           secure: false,
           changeOrigin: true,
@@ -163,7 +168,7 @@ export default defineConfig(({ mode }) => {
         },
         // API proxies
         "/api": {
-          target: "http://localhost:3000",
+          target: `http://localhost:${serverPort}`, // CUSTOM: env-ports
           changeOrigin: true,
           secure: false,
         },

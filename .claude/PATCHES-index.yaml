@@ -105,6 +105,25 @@ patches:
     tags: ["logging", "server", "info", "debugging"]
     description: "Suppress noisy server informational logs"
 
+  - id: env-ports
+    name: "Environment Variable Port Configuration"
+    file: "patches/PATCH-env-ports.md"
+    enabled: true
+    category: "features"
+    priority: "high"
+    files_modified: 4
+    dependencies: ["env-file"]
+    tags:
+      [
+        "server",
+        "client",
+        "ports",
+        "environment",
+        "networking",
+        "configuration",
+      ]
+    description: "Configure all game service ports via .env file"
+
   - id: game-template-manager
     name: "Game Template Manager"
     file: "patches/PATCH-game-template-manager.md"
@@ -131,7 +150,7 @@ dependencies:
     name: "Environment Variables"
     file: ".env"
     description: "Environment configuration file"
-    required_by: ["public-games-env"]
+    required_by: ["public-games-env", "env-ports"]
 
 # Patch application order (based on dependencies)
 application_order:
@@ -146,3 +165,4 @@ application_order:
   - "suppress-server-logs" # Independent
   - "suppress-econnrefused" # Independent
   - "public-games-env" # Depends on env-file
+  - "env-ports" # Depends on env-file

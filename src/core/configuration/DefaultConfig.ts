@@ -132,7 +132,12 @@ export abstract class DefaultServerConfig implements ServerConfig {
     return this.workerPortByIndex(this.workerIndex(gameID));
   }
   workerPortByIndex(index: number): number {
-    return 3001 + index;
+    // CUSTOM: env-ports — read worker base port from environment
+    const basePort =
+      typeof process !== "undefined" && process.env?.OPENFRONT_WORKER_BASE_PORT
+        ? parseInt(process.env.OPENFRONT_WORKER_BASE_PORT, 10)
+        : 3001;
+    return basePort + index;
   }
 }
 
