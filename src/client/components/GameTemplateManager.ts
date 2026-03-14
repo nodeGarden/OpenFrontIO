@@ -65,6 +65,7 @@ export class GameTemplateManager extends LitElement {
   @state() private isSaveModalOpen = false;
   @state() private isOrganizeModalOpen = false;
   @state() private newTemplateName = "";
+  @state() private selectedOverwriteId = "";
   @state() private editingTemplateId: string | null = null;
   @state() private editingTemplateName = "";
   @state() private draggedIndex: number | null = null;
@@ -279,6 +280,31 @@ export class GameTemplateManager extends LitElement {
     }
 
     .save-modal__input:focus {
+      outline: none;
+      border-color: var(--primaryColor, #4caf50);
+    }
+
+    .save-modal__or {
+      text-align: center;
+      color: #888;
+      font-size: 13px;
+      margin-bottom: 0.75rem;
+    }
+
+    .save-modal__select {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #555;
+      border-radius: 8px;
+      background: #2a2a2a;
+      color: #fff;
+      font-size: 14px;
+      margin-bottom: 1rem;
+      box-sizing: border-box;
+      cursor: pointer;
+    }
+
+    .save-modal__select:focus {
       outline: none;
       border-color: var(--primaryColor, #4caf50);
     }
@@ -546,6 +572,7 @@ export class GameTemplateManager extends LitElement {
 
   public openSaveModal() {
     this.newTemplateName = "";
+    this.selectedOverwriteId = "";
     this.isSaveModalOpen = true;
     setTimeout(() => this.nameInput?.focus(), 50);
   }
@@ -553,26 +580,48 @@ export class GameTemplateManager extends LitElement {
   private closeSaveModal() {
     this.isSaveModalOpen = false;
     this.newTemplateName = "";
+    this.selectedOverwriteId = "";
   }
 
   private handleSaveTemplate() {
-    if (!this.newTemplateName.trim()) return;
+    const hasName = this.newTemplateName.trim().length > 0;
+    const hasOverwrite = this.selectedOverwriteId.length > 0;
+
+    if (!hasName && !hasOverwrite) return;
 
     const settings = this.getCurrentSettings();
-    const template: GameTemplate = {
-      id: `template-${Date.now()}`,
-      name: this.newTemplateName.trim(),
-      createdAt: Date.now(),
-      settings,
-    };
 
-    this.templates = [...this.templates, template];
+    if (hasOverwrite) {
+      // Overwrite existing template with current settings
+      this.templates = this.templates.map((t) =>
+        t.id === this.selectedOverwriteId
+          ? {
+              ...t,
+              settings,
+              ...(hasName ? { name: this.newTemplateName.trim() } : {}),
+            }
+          : t,
+      );
+    } else {
+      // Create new template
+      const template: GameTemplate = {
+        id: `template-${Date.now()}`,
+        name: this.newTemplateName.trim(),
+        createdAt: Date.now(),
+        settings,
+      };
+      this.templates = [...this.templates, template];
+    }
+
     this.saveTemplates();
+    const savedTemplate = hasOverwrite
+      ? this.templates.find((t) => t.id === this.selectedOverwriteId)
+      : this.templates[this.templates.length - 1];
     this.closeSaveModal();
 
     this.dispatchEvent(
       new CustomEvent("template-saved", {
-        detail: { template },
+        detail: { template: savedTemplate },
         bubbles: true,
         composed: true,
       }),
@@ -815,15 +864,48 @@ export class GameTemplateManager extends LitElement {
                     "single_modal.template_name_placeholder",
                   )}"
                   .value=${this.newTemplateName}
-                  @input=${(e: Event) =>
-                    (this.newTemplateName = (
-                      e.target as HTMLInputElement
-                    ).value)}
+                  @input=${(e: Event) => {
+                    this.newTemplateName = (e.target as HTMLInputElement).value;
+                    if (
+                      this.newTemplateName.trim() &&
+                      this.selectedOverwriteId
+                    ) {
+                      this.selectedOverwriteId = "";
+                    }
+                  }}
                   @keydown=${(e: KeyboardEvent) => {
                     if (e.key === "Enter") this.handleSaveTemplate();
                     if (e.key === "Escape") this.closeSaveModal();
                   }}
                 />
+                ${this.templates.length > 0
+                  ? html`
+                      <div class="save-modal__or">
+                        ${translateText("single_modal.or_overwrite") ||
+                        "or update existing"}
+                      </div>
+                      <select
+                        class="save-modal__select"
+                        .value=${this.selectedOverwriteId}
+                        @change=${(e: Event) => {
+                          this.selectedOverwriteId = (
+                            e.target as HTMLSelectElement
+                          ).value;
+                        }}
+                      >
+                        <option value="">
+                          ${translateText(
+                            "single_modal.select_template_placeholder",
+                          ) || "Select a template to overwrite..."}
+                        </option>
+                        ${this.templates.map(
+                          (t) => html`
+                            <option value=${t.id}>${t.name}</option>
+                          `,
+                        )}
+                      </select>
+                    `
+                  : ""}
                 <div class="save-modal__buttons">
                   <button class="action-button" @click=${this.closeSaveModal}>
                     ${translateText("single_modal.cancel")}

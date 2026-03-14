@@ -6,7 +6,7 @@
 **Priority**: Medium
 **Status**: ✅ Available (in dev-2 branch)
 **Dependencies**: None
-**Files Modified**: 2
+**Files Modified**: 3
 **Files Created**: 1
 
 ## Description
@@ -14,6 +14,7 @@
 Adds a comprehensive game template/preset system to the Single Player modal, allowing users to:
 
 - Save current game settings as named templates
+- Overwrite existing templates via dropdown in save modal (update settings without creating duplicates)
 - Load previously saved templates
 - Mark a template as "favorite" for quick loading
 - Organize templates (rename, delete, reorder)
@@ -255,26 +256,31 @@ export interface GameTemplateSettings {
 
 ## Localization Keys
 
-Add to translation files:
+Add the following keys to `resources/lang/en.json` inside the existing `"single_modal"` section:
 
 ```json
 {
   "single_modal": {
+    "templates_section": "Templates",
     "quick_profile": "Quick Profile",
-    "load_quick_profile": "Load your favorite template",
+    "load_quick_profile": "Load quick profile",
     "profile_loaded": "Loaded!",
-    "save_template": "Save Template",
-    "load_template": "Load Template",
-    "organize_templates": "Organize Templates",
-    "export_templates": "Export Templates",
-    "import_templates": "Import Templates",
-    "template_name": "Template Name",
     "save": "Save",
+    "export": "Export",
+    "load": "Load",
+    "load_file": "Load File",
+    "organize_templates": "Organize Templates",
+    "save_template_title": "Save Template",
+    "template_name_placeholder": "Template name",
     "cancel": "Cancel",
-    "delete": "Delete",
+    "no_templates": "No templates saved yet",
+    "unfavorite": "Remove favorite",
+    "favorite_action": "Set as favorite",
     "rename": "Rename",
-    "set_favorite": "Set as Favorite",
-    "remove_favorite": "Remove from Favorites"
+    "delete": "Delete",
+    "done": "Done",
+    "or_overwrite": "or update existing",
+    "select_template_placeholder": "Select a template to overwrite..."
   }
 }
 ```
@@ -285,7 +291,11 @@ Add to translation files:
 
 Create the file `src/client/components/GameTemplateManager.ts` with the content provided in the **Complete File Content** section at the end of this document.
 
-### Step 2: Update SinglePlayerModal
+### Step 2: Add Translation Keys
+
+Add the keys from the **Localization Keys** section above to `resources/lang/en.json` inside the `"single_modal"` object.
+
+### Step 3: Update SinglePlayerModal
 
 Apply the changes outlined above to `src/client/SinglePlayerModal.ts`. Use the dev-2 version as reference:
 
