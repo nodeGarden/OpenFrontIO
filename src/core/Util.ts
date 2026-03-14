@@ -1,6 +1,6 @@
 import DOMPurify from "dompurify";
 import { customAlphabet } from "nanoid";
-import { Cell, Unit } from "./game/Game";
+import { Cell, PlayerType, Unit } from "./game/Game";
 import { GameMap, TileRef } from "./game/GameMap";
 import {
   GameConfig,
@@ -13,9 +13,9 @@ import {
 } from "./Schemas";
 
 import {
-  BOT_NAME_PREFIXES,
-  BOT_NAME_SUFFIXES,
-} from "./execution/utils/BotNames";
+  TRIBE_NAME_PREFIXES,
+  TRIBE_NAME_SUFFIXES,
+} from "./execution/utils/TribeNames";
 
 export function manhattanDistWrapped(
   c1: Cell,
@@ -291,16 +291,17 @@ export function withinInt(num: bigint, min: bigint, max: bigint): bigint {
 
 export function createRandomName(
   name: string,
-  playerType: string,
+  playerType: PlayerType,
 ): string | null {
   let randomName: string | null = null;
-  if (playerType === "HUMAN") {
+  if (playerType === PlayerType.Human) {
     const hash = simpleHash(name);
-    const prefixIndex = hash % BOT_NAME_PREFIXES.length;
+    const prefixIndex = hash % TRIBE_NAME_PREFIXES.length;
     const suffixIndex =
-      Math.floor(hash / BOT_NAME_PREFIXES.length) % BOT_NAME_SUFFIXES.length;
+      Math.floor(hash / TRIBE_NAME_PREFIXES.length) %
+      TRIBE_NAME_SUFFIXES.length;
 
-    randomName = `👤 ${BOT_NAME_PREFIXES[prefixIndex]} ${BOT_NAME_SUFFIXES[suffixIndex]}`;
+    randomName = `👤 ${TRIBE_NAME_PREFIXES[prefixIndex]} ${TRIBE_NAME_SUFFIXES[suffixIndex]}`;
   }
   return randomName;
 }

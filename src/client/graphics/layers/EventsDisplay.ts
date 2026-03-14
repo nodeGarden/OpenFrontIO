@@ -12,6 +12,7 @@ import {
 } from "../../../core/game/Game";
 import {
   AllianceExpiredUpdate,
+  AllianceExtensionUpdate,
   AllianceRequestReplyUpdate,
   AllianceRequestUpdate,
   BrokeAllianceUpdate,
@@ -24,7 +25,8 @@ import {
 } from "../../../core/game/GameUpdates";
 import {
   SendAllianceExtensionIntentEvent,
-  SendAllianceReplyIntentEvent,
+  SendAllianceRejectIntentEvent,
+  SendAllianceRequestIntentEvent,
 } from "../../Transport";
 import { Layer } from "./Layer";
 
@@ -175,6 +177,10 @@ export class EventsDisplay extends LitElement implements Layer {
     [GameUpdateType.Emoji, this.onEmojiMessageEvent.bind(this)],
     [GameUpdateType.UnitIncoming, this.onUnitIncomingEvent.bind(this)],
     [GameUpdateType.AllianceExpired, this.onAllianceExpiredEvent.bind(this)],
+    [
+      GameUpdateType.AllianceExtension,
+      this.onAllianceExtensionEvent.bind(this),
+    ],
   ] as const;
 
   constructor() {
@@ -468,16 +474,14 @@ export class EventsDisplay extends LitElement implements Layer {
           className: "btn",
           action: () =>
             this.eventBus.emit(
-              new SendAllianceReplyIntentEvent(requestor, recipient, true),
+              new SendAllianceRequestIntentEvent(recipient, requestor),
             ),
         },
         {
           text: translateText("events_display.reject_alliance"),
           className: "btn-info",
           action: () =>
-            this.eventBus.emit(
-              new SendAllianceReplyIntentEvent(requestor, recipient, false),
-            ),
+            this.eventBus.emit(new SendAllianceRejectIntentEvent(requestor)),
         },
       ],
       highlight: true,
@@ -619,6 +623,13 @@ export class EventsDisplay extends LitElement implements Layer {
       createdAt: this.game.ticks(),
       focusID: otherID,
     });
+  }
+
+  private onAllianceExtensionEvent(update: AllianceExtensionUpdate) {
+    const myPlayer = this.game.myPlayer();
+    if (!myPlayer || myPlayer.smallID() !== update.playerID) return;
+    this.removeAllianceRenewalEvents(update.allianceID);
+    this.requestUpdate();
   }
 
   onTargetPlayerEvent(event: TargetPlayerUpdate) {
@@ -783,9 +794,7 @@ export class EventsDisplay extends LitElement implements Layer {
       <!-- Events Toggle (when hidden) -->
       ${this._hidden
         ? html`
-            <div
-              class="relative w-fit min-[1200px]:bottom-4 min-[1200px]:right-4 z-50"
-            >
+            <div class="relative w-fit z-50">
               ${this.renderButton({
                 content: html`
                   <span class="flex items-center gap-2">
@@ -807,11 +816,11 @@ export class EventsDisplay extends LitElement implements Layer {
         : html`
             <!-- Main Events Display -->
             <div
-              class="relative w-full min-[1200px]:bottom-4 min-[1200px]:right-4 z-50 min-[1200px]:w-96 backdrop-blur-sm"
+              class="relative w-full z-50 min-[1200px]:w-96 backdrop-blur-sm"
             >
               <!-- Button Bar -->
               <div
-                class="w-full p-2 lg:p-3 bg-gray-800/70 min-[1200px]:rounded-t-lg sm:rounded-tl-lg"
+                class="w-full p-2 lg:p-3 bg-gray-800/70 sm:rounded-tl-lg min-[1200px]:rounded-t-lg"
               >
                 <div class="flex justify-between items-center gap-3">
                   <div class="flex gap-4">
@@ -855,7 +864,7 @@ export class EventsDisplay extends LitElement implements Layer {
 
               <!-- Content Area -->
               <div
-                class="bg-gray-800/70 max-h-[30vh] overflow-y-auto w-full h-full min-[1200px]:rounded-b-xl events-container"
+                class="bg-gray-800/70 max-h-[15vh] lg:max-h-[30vh] overflow-y-auto w-full h-full min-[1200px]:rounded-b-xl events-container"
               >
                 <div>
                   <table

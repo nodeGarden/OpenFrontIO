@@ -34,7 +34,7 @@ export type Intent =
   | BoatAttackIntent
   | CancelBoatIntent
   | AllianceRequestIntent
-  | AllianceRequestReplyIntent
+  | AllianceRejectIntent
   | AllianceExtensionIntent
   | BreakAllianceIntent
   | TargetPlayerIntent
@@ -60,9 +60,7 @@ export type BoatAttackIntent = z.infer<typeof BoatAttackIntentSchema>;
 export type EmbargoAllIntent = z.infer<typeof EmbargoAllIntentSchema>;
 export type CancelBoatIntent = z.infer<typeof CancelBoatIntentSchema>;
 export type AllianceRequestIntent = z.infer<typeof AllianceRequestIntentSchema>;
-export type AllianceRequestReplyIntent = z.infer<
-  typeof AllianceRequestReplyIntentSchema
->;
+export type AllianceRejectIntent = z.infer<typeof AllianceRejectIntentSchema>;
 export type BreakAllianceIntent = z.infer<typeof BreakAllianceIntentSchema>;
 export type TargetPlayerIntent = z.infer<typeof TargetPlayerIntentSchema>;
 export type EmojiIntent = z.infer<typeof EmojiIntentSchema>;
@@ -161,7 +159,7 @@ export const GameInfoSchema = z.object({
 export const PublicGameInfoSchema = z.object({
   gameID: z.string(),
   numClients: z.number(),
-  startsAt: z.number(),
+  startsAt: z.number().optional(),
   gameConfig: z.lazy(() => GameConfigSchema).optional(),
   publicGameType: PublicGameTypeSchema,
 });
@@ -217,15 +215,24 @@ export const GameConfigSchema = z.object({
       isCompact: z.boolean(),
       isRandomSpawn: z.boolean(),
       isCrowded: z.boolean(),
+      isHardNations: z.boolean(),
       startingGold: z.number().int().min(0).optional(),
+      goldMultiplier: z.number().min(0.1).max(1000).optional(),
+      isAlliancesDisabled: z.boolean(),
     })
     .optional(),
-  disableNations: z.boolean(),
+  nations: z
+    .number()
+    .int()
+    .min(1)
+    .max(400)
+    .or(z.enum(["default", "disabled"])),
   bots: z.number().int().min(0).max(400),
   infiniteGold: z.boolean(),
   infiniteTroops: z.boolean(),
   instantBuild: z.boolean(),
   disableNavMesh: z.boolean().optional(),
+  disableAlliances: z.boolean().optional(),
   randomSpawn: z.boolean(),
   maxPlayers: z.number().optional(),
   maxTimerValue: z.number().int().min(1).max(120).optional(), // In minutes
@@ -316,10 +323,9 @@ export const AllianceRequestIntentSchema = z.object({
   recipient: ID,
 });
 
-export const AllianceRequestReplyIntentSchema = z.object({
-  type: z.literal("allianceRequestReply"),
-  requestor: ID, // The one who made the original alliance request
-  accept: z.boolean(),
+export const AllianceRejectIntentSchema = z.object({
+  type: z.literal("allianceReject"),
+  requestor: ID,
 });
 
 export const BreakAllianceIntentSchema = z.object({
@@ -431,7 +437,7 @@ const IntentSchema = z.discriminatedUnion("type", [
   BoatAttackIntentSchema,
   CancelBoatIntentSchema,
   AllianceRequestIntentSchema,
-  AllianceRequestReplyIntentSchema,
+  AllianceRejectIntentSchema,
   BreakAllianceIntentSchema,
   TargetPlayerIntentSchema,
   EmojiIntentSchema,
@@ -549,8 +555,9 @@ export const ServerStartGameMessageSchema = z.object({
   turns: TurnSchema.array(),
   gameStartInfo: GameStartInfoSchema,
   lobbyCreatedAt: z.number(),
-  // The clientID assigned to this connection by the server
-  myClientID: ID,
+  // The clientID assigned to this connection by the server.
+  // Absent for replays where the viewer has no player identity.
+  myClientID: ID.optional(),
 });
 
 export const ServerDesyncSchema = z.object({

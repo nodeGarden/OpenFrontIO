@@ -6,6 +6,7 @@ import { WinCheckExecution } from "./execution/WinCheckExecution";
 import {
   AllPlayers,
   Attack,
+  BuildableUnit,
   Cell,
   Game,
   GameUpdates,
@@ -13,6 +14,7 @@ import {
   Player,
   PlayerActions,
   PlayerBorderTiles,
+  PlayerBuildableUnitType,
   PlayerID,
   PlayerInfo,
   PlayerProfile,
@@ -22,11 +24,7 @@ import {
 import { createGame } from "./game/GameImpl";
 import { TileRef } from "./game/GameMap";
 import { GameMapLoader } from "./game/GameMapLoader";
-import {
-  ErrorUpdate,
-  GameUpdateType,
-  GameUpdateViewData,
-} from "./game/GameUpdates";
+import { ErrorUpdate, GameUpdateViewData } from "./game/GameUpdates";
 import { createNationsForGame } from "./game/NationCreation";
 import { loadTerrainMap as loadGameMap } from "./game/TerrainMapLoader";
 import { PseudoRandom } from "./PseudoRandom";
@@ -35,7 +33,7 @@ import { simpleHash } from "./Util";
 
 export async function createGameRunner(
   gameStart: GameStartInfo,
-  clientID: ClientID,
+  clientID: ClientID | undefined,
   mapLoader: GameMapLoader,
   callBack: (gu: GameUpdateViewData | ErrorUpdate) => void,
 ): Promise<GameRunner> {
@@ -70,6 +68,7 @@ export async function createGameRunner(
     gameMap.gameMap,
     gameMap.miniGameMap,
     config,
+    gameMap.teamGameSpawnAreas,
   );
 
   const gr = new GameRunner(
@@ -100,7 +99,7 @@ export class GameRunner {
     }
     if (this.game.config().bots() > 0) {
       this.game.addExecution(
-        ...this.execManager.spawnBots(this.game.config().numBots()),
+        ...this.execManager.spawnTribes(this.game.config().bots()),
       );
     }
     if (this.game.config().spawnNations()) {
@@ -118,7 +117,7 @@ export class GameRunner {
     this.turns.push(turn);
   }
 
-  public executeNextTick(): boolean {
+  public executeNextTick(pendingTurns?: number): boolean {
     if (this.isExecuting) {
       return false;
     }
@@ -172,16 +171,17 @@ export class GameRunner {
       });
     }
 
-    // Many tiles are updated to pack it into an array
-    const packedTileUpdates = updates[GameUpdateType.Tile].map((u) => u.update);
-    updates[GameUpdateType.Tile] = [];
+    const packedTileUpdates = this.game.drainPackedTileUpdates();
+    const packedMotionPlans = this.game.drainPackedMotionPlans();
 
     this.callBack({
       tick: this.game.ticks(),
-      packedTileUpdates: new BigUint64Array(packedTileUpdates),
+      packedTileUpdates,
+      ...(packedMotionPlans ? { packedMotionPlans } : {}),
       updates: updates,
       playerNameViewData: this.playerViewData,
       tickExecutionDuration: tickExecutionDuration,
+      pendingTurns: pendingTurns ?? 0,
     });
     this.isExecuting = false;
     return true;
@@ -191,18 +191,30 @@ export class GameRunner {
     return Math.max(0, this.turns.length - this.currTurn);
   }
 
+  public playerBuildables(
+    playerID: PlayerID,
+    x?: number,
+    y?: number,
+    units?: readonly PlayerBuildableUnitType[],
+  ): BuildableUnit[] {
+    const player = this.game.player(playerID);
+    const tile =
+      x !== undefined && y !== undefined ? this.game.ref(x, y) : null;
+    return player.buildableUnits(tile, units);
+  }
+
   public playerActions(
     playerID: PlayerID,
     x?: number,
     y?: number,
-    units?: UnitType[],
+    units?: readonly PlayerBuildableUnitType[] | null,
   ): PlayerActions {
     const player = this.game.player(playerID);
     const tile =
       x !== undefined && y !== undefined ? this.game.ref(x, y) : null;
     const actions = {
-      canAttack: tile !== null && units === undefined && player.canAttack(tile),
-      buildableUnits: player.buildableUnits(tile, units),
+      canAttack: tile !== null && player.canAttack(tile),
+      buildableUnits: units === null ? [] : player.buildableUnits(tile, units),
       canSendEmojiAllPlayers: player.canSendEmoji(AllPlayers),
       canEmbargoAll: player.canEmbargoAll(),
     } as PlayerActions;
@@ -218,11 +230,8 @@ export class GameRunner {
         canDonateGold: player.canDonateGold(other),
         canDonateTroops: player.canDonateTroops(other),
         canEmbargo: !player.hasEmbargoAgainst(other),
+        allianceInfo: player.allianceInfo(other) ?? undefined,
       };
-      const alliance = player.allianceWith(other as Player);
-      if (alliance) {
-        actions.interaction.allianceExpiresAt = alliance.expiresAt();
-      }
     }
 
     return actions;
