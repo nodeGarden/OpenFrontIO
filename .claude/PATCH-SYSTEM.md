@@ -251,6 +251,84 @@ for (const patch of appliedPatches) {
 }
 ```
 
+## Upstream PR Patches
+
+A special patch type for changes cherry-picked from upstream pull requests that haven't been merged yet. These patches track their source PR and can be automatically detected as redundant once the PR is merged into the main branch.
+
+### YAML Frontmatter Fields
+
+```yaml
+---
+id: pr-3425-train-gold
+name: "Asymmetric Train Gold Rewards"
+category: upstream-pr
+priority: medium
+enabled: true
+source:
+  type: github-pr
+  repo: openfrontio/OpenFrontIO
+  pr: 3425
+  title: "feat: asymmetric train gold rewards (factory owner +5k over city owner)"
+  author_discord: ""
+  fetched_at: "2026-03-16"
+upstream_status: open # open | merged | closed
+merged_to_main: false # true once PR is merged into main branch
+notes: "" # Additional instructions or context
+files_modified: 5
+target_files:
+  - path: src/core/configuration/Config.ts
+  - path: src/core/configuration/DefaultConfig.ts
+  - path: src/core/execution/nation/NationStructureBehavior.ts
+  - path: src/core/game/TrainStation.ts
+  - path: tests/core/game/TrainStation.test.ts
+---
+```
+
+### Key Fields
+
+| Field                   | Description                                                    |
+| ----------------------- | -------------------------------------------------------------- |
+| `source.type`           | Always `github-pr` for PR-sourced patches                      |
+| `source.repo`           | GitHub repo in `owner/name` format                             |
+| `source.pr`             | PR number                                                      |
+| `source.title`          | Original PR title                                              |
+| `source.author_discord` | PR author's Discord (for contact if issues arise)              |
+| `source.fetched_at`     | Date the diff was fetched and applied                          |
+| `upstream_status`       | Current PR status: `open`, `merged`, or `closed`               |
+| `merged_to_main`        | Set to `true` when the PR is merged — patch becomes redundant  |
+| `notes`                 | Additional instructions, caveats, or modifications made on top |
+
+### Lifecycle
+
+1. **Applied**: PR diff is fetched and applied to our branch. Patch file documents the source.
+2. **Active**: `upstream_status: open`, `merged_to_main: false` — patch is providing functionality not yet in main.
+3. **Redundant**: `upstream_status: merged`, `merged_to_main: true` — after next upstream merge, this patch is no longer needed.
+4. **Cleanup**: After merging upstream (which includes the PR), remove the patch file and registry entry.
+
+### Checking Upstream Status
+
+```bash
+# Check if a PR has been merged
+gh pr view openfrontio/OpenFrontIO --json state,mergedAt < PR_NUMBER > --repo
+
+# Batch check all upstream-pr patches
+for pr in 3425 3397 3383 3430; do
+  echo -n "PR #$pr: "
+  gh pr view $pr --repo openfrontio/OpenFrontIO --json state --jq '.state'
+done
+```
+
+### When Upstream Merges
+
+After pulling upstream changes that include a merged PR:
+
+1. The patch's code changes are now in main — our patch is redundant
+2. Update the patch: `upstream_status: merged`, `merged_to_main: true`, `enabled: false`
+3. Verify no conflicts with our other patches
+4. Optionally delete the patch file and registry entry
+
+---
+
 ## Adding New Patches
 
 ### 1. Create Patch File

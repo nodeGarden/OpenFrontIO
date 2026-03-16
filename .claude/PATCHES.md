@@ -27,7 +27,18 @@
 | ✅     | [Env Ports](patches/PATCH-env-ports.md)                         | High     | 4     | Features | Configure all game service ports via .env file           |
 | ❌     | [Game Template Manager](patches/PATCH-game-template-manager.md) | Medium   | 3     | UI       | Save/load game setting templates with favorite support   |
 
+### Upstream PR Patches
+
+| Status | Patch                                                              | PR    | Priority | Files | Description                                             |
+| ------ | ------------------------------------------------------------------ | ----- | -------- | ----- | ------------------------------------------------------- |
+| ✅     | [Train Gold](patches/PATCH-pr-3425-train-gold.md)                  | #3425 | Medium   | 4     | Asymmetric train gold rewards (factory +5k bonus)       |
+| ✅     | [Speed Keybinds](patches/PATCH-pr-3397-game-speed-keybinds.md)     | #3397 | Medium   | 7     | P=pause, </>=speed keybinds                             |
+| ✅     | [PR/Panama Maps](patches/PATCH-pr-3383-puerto-rico-panama-maps.md) | #3383 | Low      | 64    | Puerto Rico + Panama maps with nations and flags        |
+| ✅     | [UI QoL](patches/PATCH-pr-3430-ui-qol.md)                          | #3430 | High     | 16    | Moveable HUD, diplomacy panel, rate limiting, UI polish |
+
 **Legend**: ✅ Enabled | ❌ Disabled
+
+> **Upstream PR patches** are sourced from open PRs on `openfrontio/OpenFrontIO`. Once a PR is merged to main, its patch becomes redundant and should be removed after pulling upstream.
 
 ## Patch Categories
 
@@ -53,6 +64,13 @@
 ### 🎨 UI (1 patch)
 
 - **Game Template Manager** - Save/load game setting templates with favorite support
+
+### 🔀 Upstream PRs (4 patches)
+
+- **Train Gold** (#3425) - Asymmetric train gold rewards
+- **Speed Keybinds** (#3397) - Game speed and pause keyboard shortcuts
+- **PR/Panama Maps** (#3383) - Puerto Rico and Panama maps
+- **UI QoL** (#3430) - Moveable HUD, diplomacy panel, rate limiting
 
 ## Dependencies
 
@@ -135,11 +153,11 @@ pnpm dev:server
 
 ## Patch Statistics
 
-- **Total Patches**: 11
-- **Enabled**: 10
+- **Total Patches**: 15
+- **Enabled**: 14
 - **Disabled**: 1
-- **Total Files Modified**: 21
-- **Categories**: 4 (Build, Logging, Features, UI)
+- **Total Files Modified**: ~52
+- **Categories**: 5 (Build, Logging, Features, UI, Upstream PR)
 
 ## Format Options
 

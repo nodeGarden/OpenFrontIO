@@ -3,7 +3,7 @@
 # Agents can parse this to determine which patches to apply
 
 version: "1.0.0"
-last_updated: "2026-02-15"
+last_updated: "2026-03-16"
 
 patches:
   - id: vite-logger
@@ -124,6 +124,77 @@ patches:
       ]
     description: "Configure all game service ports via .env file"
 
+  # Upstream PR patches (from open PRs, will become redundant when merged)
+  - id: pr-3425-train-gold
+    name: "Asymmetric Train Gold Rewards"
+    file: "patches/PATCH-pr-3425-train-gold.md"
+    enabled: true
+    category: "upstream-pr"
+    priority: "medium"
+    files_modified: 4
+    dependencies: []
+    tags: ["gameplay", "economy", "trains", "balance"]
+    description: "Factory owner gets +5k gold bonus over city owner per train delivery"
+    source:
+      type: github-pr
+      repo: openfrontio/OpenFrontIO
+      pr: 3425
+    upstream_status: open
+    merged_to_main: false
+
+  - id: pr-3397-game-speed-keybinds
+    name: "Game Speed + Pause Keybinds"
+    file: "patches/PATCH-pr-3397-game-speed-keybinds.md"
+    enabled: true
+    category: "upstream-pr"
+    priority: "medium"
+    files_modified: 7
+    dependencies: []
+    tags: ["ui", "keybinds", "gameplay", "speed", "pause"]
+    description: "P=pause, </>=speed down/up keybinds for games and replays"
+    source:
+      type: github-pr
+      repo: openfrontio/OpenFrontIO
+      pr: 3397
+    upstream_status: open
+    merged_to_main: false
+
+  - id: pr-3383-maps
+    name: "Puerto Rico + Panama Maps"
+    file: "patches/PATCH-pr-3383-puerto-rico-panama-maps.md"
+    enabled: true
+    category: "upstream-pr"
+    priority: "low"
+    files_modified: 6
+    files_created: 58
+    dependencies: []
+    tags: ["maps", "content", "flags", "i18n"]
+    description: "Adds Puerto Rico and Panama maps with nations and flags"
+    source:
+      type: github-pr
+      repo: openfrontio/OpenFrontIO
+      pr: 3383
+    upstream_status: open
+    merged_to_main: false
+
+  - id: pr-3430-ui-qol
+    name: "UI Quality of Life Upgrade"
+    file: "patches/PATCH-pr-3430-ui-qol.md"
+    enabled: true
+    category: "upstream-pr"
+    priority: "high"
+    files_modified: 14
+    files_created: 2
+    dependencies: []
+    tags: ["ui", "hud", "diplomacy", "rate-limiting", "security", "balance"]
+    description: "Moveable HUD, diplomacy panel, rate limiting, UI polish"
+    source:
+      type: github-pr
+      repo: openfrontio/OpenFrontIO
+      pr: 3430
+    upstream_status: open
+    merged_to_main: false
+
   - id: game-template-manager
     name: "Game Template Manager"
     file: "patches/PATCH-game-template-manager.md"
@@ -166,3 +237,8 @@ application_order:
   - "suppress-econnrefused" # Independent
   - "public-games-env" # Depends on env-file
   - "env-ports" # Depends on env-file
+  # Upstream PR patches (independent, apply after local patches)
+  - "pr-3425-train-gold"
+  - "pr-3397-game-speed-keybinds"
+  - "pr-3383-maps"
+  - "pr-3430-ui-qol"

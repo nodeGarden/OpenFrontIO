@@ -53,8 +53,8 @@ importers:
         specifier: ^1.8.1
         version: 1.8.1
       dompurify:
-        specifier: ^3.1.7
-        version: 3.3.1
+        specifier: ^3.3.2
+        version: 3.3.3
       dotenv:
         specifier: ^16.5.0
         version: 16.6.1
@@ -85,6 +85,9 @@ importers:
       js-yaml:
         specifier: ^4.1.1
         version: 4.1.1
+      limiter:
+        specifier: ^3.0.0
+        version: 3.0.0
       nanoid:
         specifier: ^3.3.6
         version: 3.3.11
@@ -287,6 +290,9 @@ importers:
       vitest:
         specifier: ^4.0.16
         version: 4.0.16(@opentelemetry/api@1.9.0)(@types/node@22.19.3)(@vitest/ui@4.0.16)(jiti@2.6.1)(jsdom@27.4.0(canvas@3.2.1))(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
+      vitest-canvas-mock:
+        specifier: ^1.1.3
+        version: 1.1.3(vitest@4.0.16)
 
 packages:
   "@acemir/cssom@0.9.30":
@@ -3461,6 +3467,12 @@ packages:
       }
     engines: { node: ">= 6" }
 
+  cssfontparser@1.2.1:
+    resolution:
+      {
+        integrity: sha512-6tun4LoZnj7VN6YeegOVb67KBX/7JJsqvj+pv3ZA7F878/eN33AbGa5b/S/wXxS/tcp8nc40xRUrsPlxIyNUPg==,
+      }
+
   cssstyle@5.3.6:
     resolution:
       {
@@ -3838,10 +3850,10 @@ packages:
       }
     engines: { node: ">= 4" }
 
-  dompurify@3.3.1:
+  dompurify@3.3.3:
     resolution:
       {
-        integrity: sha512-qkdCKzLNtrgPFP1Vo+98FRzJnBRGe4ffyCea9IwHB1fyxPOeNTHpLKYGd4Uk9xvNoH0ZoOjwZxNptyMwqrId1Q==,
+        integrity: sha512-Oj6pzI2+RqBfFG+qOaOLbFXLQ90ARpcGG6UePL82bJLtdsa6CYJD7nmiU8MW9nQNOtCHV3lZ/Bzq1X0QYbBZCA==,
       }
 
   domutils@2.8.0:
@@ -4955,6 +4967,12 @@ packages:
       }
     engines: { node: ">= 12.0.0" }
 
+  limiter@3.0.0:
+    resolution:
+      {
+        integrity: sha512-hev7DuXojsTFl2YwyzUJMDnZ/qBDd3yZQLSH3aD4tdL1cqfc3TMnoecEJtWFaQFdErZsKoFMBTxF/FBSkgDbEg==,
+      }
+
   lint-staged@16.2.7:
     resolution:
       {
@@ -5237,6 +5255,12 @@ packages:
     resolution:
       {
         integrity: sha512-gKLcREMhtuZRwRAfqP3RFW+TK4JqApVBtOIftVgjuABpAtpxhPGaDcfvbhNvD0B8iD1oUr/txX35NjcaY6Ns/A==,
+      }
+
+  moo-color@1.0.3:
+    resolution:
+      {
+        integrity: sha512-i/+ZKXMDf6aqYtBhuOcej71YSlbjT3wCO/4H1j8rPvxDJEifdwgg5MaFyu6iYAT8GBZJg2z0dkgK4YMzvURALQ==,
       }
 
   mrmime@2.0.1:
@@ -6572,6 +6596,14 @@ packages:
         optional: true
       yaml:
         optional: true
+
+  vitest-canvas-mock@1.1.3:
+    resolution:
+      {
+        integrity: sha512-zlKJR776Qgd+bcACPh0Pq5MG3xWq+CdkACKY/wX4Jyija0BSz8LH3aCCgwFKYFwtm565+050YFEGG9Ki0gE/Hw==,
+      }
+    peerDependencies:
+      vitest: ^3.0.0 || ^4.0.0
 
   vitest@4.0.16:
     resolution:
@@ -9005,6 +9037,8 @@ snapshots:
 
   css-what@6.2.2: {}
 
+  cssfontparser@1.2.1: {}
+
   cssstyle@5.3.6:
     dependencies:
       "@asamuzakjp/css-color": 4.1.1
@@ -9231,7 +9265,7 @@ snapshots:
     dependencies:
       domelementtype: 2.3.0
 
-  dompurify@3.3.1:
+  dompurify@3.3.3:
     optionalDependencies:
       "@types/trusted-types": 2.0.7
 
@@ -9900,6 +9934,8 @@ snapshots:
       lightningcss-win32-arm64-msvc: 1.30.2
       lightningcss-win32-x64-msvc: 1.30.2
 
+  limiter@3.0.0: {}
+
   lint-staged@16.2.7:
     dependencies:
       commander: 14.0.2
@@ -10062,6 +10098,10 @@ snapshots:
   minipass@7.1.2: {}
 
   mkdirp-classic@0.5.3: {}
+
+  moo-color@1.0.3:
+    dependencies:
+      color-name: 1.1.4
 
   mrmime@2.0.1: {}
 
@@ -10828,6 +10868,12 @@ snapshots:
       terser: 5.44.1
       tsx: 4.21.0
       yaml: 2.8.2
+
+  vitest-canvas-mock@1.1.3(vitest@4.0.16):
+    dependencies:
+      cssfontparser: 1.2.1
+      moo-color: 1.0.3
+      vitest: 4.0.16(@opentelemetry/api@1.9.0)(@types/node@22.19.3)(@vitest/ui@4.0.16)(jiti@2.6.1)(jsdom@27.4.0(canvas@3.2.1))(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
 
   vitest@4.0.16(@opentelemetry/api@1.9.0)(@types/node@22.19.3)(@vitest/ui@4.0.16)(jiti@2.6.1)(jsdom@27.4.0(canvas@3.2.1))(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2):
     dependencies:

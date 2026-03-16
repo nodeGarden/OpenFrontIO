@@ -12,6 +12,8 @@ import goldCoinIcon from "/images/GoldCoinIcon.svg?url";
 import soldierIcon from "/images/SoldierIcon.svg?url";
 import swordIcon from "/images/SwordIcon.svg?url";
 
+const CONTROL_PANEL_POSITION_KEY = "ui.hud.controlPanelPosition";
+
 @customElement("control-panel")
 export class ControlPanel extends LitElement implements Layer {
   public game: GameView;
@@ -40,6 +42,9 @@ export class ControlPanel extends LitElement implements Layer {
   @state()
   private _attackingTroops: number = 0;
 
+  @state()
+  private _hudPosition: "center" | "left" = "center";
+
   private _troopRateIsIncreasing: boolean = true;
 
   private _lastTroopIncreaseRate: number;
@@ -49,6 +54,10 @@ export class ControlPanel extends LitElement implements Layer {
   }
 
   init() {
+    this._hudPosition =
+      localStorage.getItem(CONTROL_PANEL_POSITION_KEY) === "left"
+        ? "left"
+        : "center";
     this.attackRatio = Number(
       localStorage.getItem("settings.attackRatio") ?? "0.2",
     );
@@ -72,6 +81,13 @@ export class ControlPanel extends LitElement implements Layer {
       this.attackRatio = newAttackRatio;
       this.onAttackRatioChange(this.attackRatio);
     });
+  }
+
+  private toggleHudPosition() {
+    this._hudPosition = this._hudPosition === "center" ? "left" : "center";
+    localStorage.setItem(CONTROL_PANEL_POSITION_KEY, this._hudPosition);
+    window.dispatchEvent(new CustomEvent("hud-position-change"));
+    this.requestUpdate();
   }
 
   tick() {
@@ -208,7 +224,7 @@ export class ControlPanel extends LitElement implements Layer {
     const { greenPercent, orangePercent } = this.calculateTroopBar();
     return html`
       <div
-        class="w-full h-8 border border-gray-600 rounded-md bg-gray-900/60 overflow-hidden relative"
+        class="w-full h-6 border border-gray-600 rounded-md bg-gray-900/60 overflow-hidden relative"
       >
         <div class="h-full flex">
           ${greenPercent > 0
@@ -225,7 +241,7 @@ export class ControlPanel extends LitElement implements Layer {
             : ""}
         </div>
         <div
-          class="absolute inset-0 flex items-center text-xl font-bold leading-none pointer-events-none"
+          class="absolute inset-0 flex items-center text-lg font-bold leading-none pointer-events-none"
           translate="no"
         >
           <span class="flex-1 flex justify-end h-full items-center pr-0.5">
@@ -261,10 +277,10 @@ export class ControlPanel extends LitElement implements Layer {
   private renderDesktop() {
     return html`
       <!-- Row 1: troop rate | troop bar | gold -->
-      <div class="flex gap-1.5 items-center mb-1.5">
+      <div class="flex gap-1.5 items-center mb-1">
         <!-- Troop rate -->
         <div
-          class="flex items-center gap-1 shrink-0 border rounded-md font-bold text-sm p-1 w-[5.5rem] ${this
+          class="flex items-center gap-1 shrink-0 border rounded-md font-bold text-sm py-0.5 px-1 w-[5.5rem] ${this
             ._troopRateIsIncreasing
             ? "border-green-400"
             : "border-orange-400"}"
@@ -292,7 +308,7 @@ export class ControlPanel extends LitElement implements Layer {
         <div class="flex-1">${this.renderDesktopTroopBar()}</div>
         <!-- Gold -->
         <div
-          class="flex items-center gap-1 shrink-0 border rounded-md border-yellow-400 font-bold text-yellow-400 text-sm p-1 w-[4.5rem]"
+          class="flex items-center gap-1 shrink-0 border rounded-md border-yellow-400 font-bold text-yellow-400 text-sm py-0.5 px-1 w-[4.5rem]"
           translate="no"
         >
           <img src=${goldCoinIcon} width="13" height="13" class="shrink-0" />
@@ -300,9 +316,9 @@ export class ControlPanel extends LitElement implements Layer {
         </div>
       </div>
       <!-- Row 2: attack ratio | slider -->
-      <div class="flex items-center gap-2" translate="no">
+      <div class="flex items-center gap-1.5" translate="no">
         <div
-          class="flex items-center gap-1 shrink-0 border border-gray-600 rounded-md p-1 text-sm font-bold text-white cursor-pointer w-[8rem]"
+          class="flex items-center gap-1 shrink-0 border border-gray-600 rounded-md px-1 py-0.5 text-sm font-bold text-white cursor-pointer w-[8rem]"
         >
           <img
             src=${swordIcon}
@@ -326,7 +342,7 @@ export class ControlPanel extends LitElement implements Layer {
           .value=${String(Math.round(this.attackRatio * 100))}
           @input=${(e: Event) => this.handleRatioSliderInput(e)}
           @pointerup=${(e: Event) => this.handleRatioSliderPointerUp(e)}
-          class="flex-1 h-2 accent-blue-500 cursor-pointer"
+          class="flex-1 h-1.5 accent-blue-500 cursor-pointer"
         />
       </div>
     `;
@@ -384,10 +400,20 @@ export class ControlPanel extends LitElement implements Layer {
     return html`
       <div
         class="relative pointer-events-auto ${this._isVisible
-          ? "relative w-full text-sm px-2 py-1.5"
+          ? "relative w-full text-sm px-2 py-1"
           : "hidden"}"
         @contextmenu=${(e: MouseEvent) => e.preventDefault()}
       >
+        <button
+          class="absolute -bottom-4 left-1 z-10 px-1.5 py-0.5 rounded border border-white/20 bg-gray-800/92 text-[10px] font-semibold leading-none text-white/70 hover:text-white hover:border-white/40 transition-colors"
+          title="${this._hudPosition === "center"
+            ? "Move control panel to left"
+            : "Move control panel to center"}"
+          @click=${() => this.toggleHudPosition()}
+          translate="no"
+        >
+          ${this._hudPosition === "center" ? "C" : "L"}
+        </button>
         <div class="lg:hidden">${this.renderMobile()}</div>
         <div class="hidden lg:block">${this.renderDesktop()}</div>
       </div>

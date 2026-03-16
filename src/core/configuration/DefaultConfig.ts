@@ -276,24 +276,28 @@ export class DefaultConfig implements Config {
   trainSpawnRate(numPlayerFactories: number): number {
     // hyperbolic decay, midpoint at 10 factories
     // expected number of trains = numPlayerFactories  / trainSpawnRate(numPlayerFactories)
-    return (numPlayerFactories + 10) * 18;
+    return (numPlayerFactories + 10) * 15;
   }
   trainGold(
     rel: "self" | "team" | "ally" | "other",
     citiesVisited: number,
+    isReceiver: boolean,
   ): Gold {
-    // No penalty for the first 5 cities.
-    citiesVisited = Math.max(0, citiesVisited - 5);
+    // No penalty for the first 10 cities.
+    citiesVisited = Math.max(0, citiesVisited - 9);
     let baseGold: number;
     switch (rel) {
       case "ally":
-        baseGold = 35_000;
+        // Factory owner (sender) earns 35k; city owner (receiver) earns 30k.
+        baseGold = isReceiver ? 30_000 : 35_000;
         break;
       case "team":
       case "other":
-        baseGold = 25_000;
+        // Factory owner (sender) earns 25k; city owner (receiver) earns 20k.
+        baseGold = isReceiver ? 20_000 : 25_000;
         break;
       case "self":
+        // Symmetric: factory and city belong to the same player.
         baseGold = 10_000;
         break;
     }
@@ -316,7 +320,7 @@ export class DefaultConfig implements Config {
     // Sigmoid: concave start, sharp S-curve middle, linear end - heavily punishes trades under range debuff.
     const debuff = this.tradeShipShortRangeDebuff();
     const baseGold =
-      50_000 / (1 + Math.exp(-0.03 * (dist - debuff))) + 50 * dist;
+      75_000 / (1 + Math.exp(-0.03 * (dist - debuff))) + 50 * dist;
     const multiplier = this.goldMultiplier();
     return BigInt(Math.floor(baseGold * multiplier));
   }
